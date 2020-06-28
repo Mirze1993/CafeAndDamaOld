@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoreWebApiTutorial.Inistaller;
 using CoreWebApiTutorial.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,11 +26,7 @@ namespace CoreWebApiTutorial
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddSwaggerGen(option =>
-            {
-                option.SwaggerDoc("v1", new OpenApiInfo() { Title="Test Api1",Version="v1"});
-            });
+            services.Inistaller(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
