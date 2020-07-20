@@ -18,12 +18,15 @@ namespace XUnitTest
         }
 
         CategoryRepository category = new CategoryRepository();
+        ProductRepository product = new ProductRepository();
         [Fact]
         public void Test1()
         {
-           var list= category.GetById(30);
-            list.ForEach(c => output.WriteLine(c.Name));
-            output.WriteLine(Log.log);
+            var list = product.Insert(new Product() {
+                Description="asdasd",ImgPath="wdawd",SubCategoryId=1
+            });
+            
+            output.WriteLine(list.ToString());
         }
 
         [Fact]

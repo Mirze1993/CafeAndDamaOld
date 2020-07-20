@@ -1,80 +1,20 @@
-﻿@model UICategoryWithSub
+﻿@model Category
 
 @{
     ViewData["Title"] = "Add";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    List<UISubCategory> uISubCategories = ViewBag.SubCategorys;
+    bool b;
 }
-
-<form method="post" asp-action="Add">
+<!--catigorya ad or update-->
+<form method="post" asp-action="AddOrUpdate">
     <div class="form-group">
-        <label asp-for="category.Name">Katiqoriya adı:</label>
-        <input asp-for="category.Name" class="form-control" required>
+        <label asp-for="Name">Katiqoriya adı:</label>
+        <input asp-for="Name" class="form-control" required>
         <div class="invalid-feedback">Zəhmət olmasa doldurun</div>
     </div>
 
-    <input type="hidden" asp-for="category.Id" />
-
-    <table id="SubCategoryTable" class="table  hover">
-        <thead>
-            <tr>
-                <th class="th-sm">
-                    Seç
-                </th>
-                <th class="th-sm">
-                    ID
-                </th>
-                <th class="th-sm">
-                    Adı
-                </th>
-                <th class="th-sm">
-                    Açıqlama
-                </th>
-                <th class="th-sm">
-                    Katigorya ID
-                </th>
-
-            </tr>
-        </thead>
-        <tbody>
-
-            @for (int i = 0; i < Model.subCategories.Count; i++)
-            {
-                <tr>
-                    <td>
-                        <input type="checkbox"  asp-for="subCategories[i].IsCheck">
-                    </td>
-                    <td>@Model.subCategories[i].Id </td>
-                    <td>@Model.subCategories[i].Name </td>
-                    <td>@Model.subCategories[i].Description </td>
-                    <td>@Model.subCategories[i].CategoryId </td> 
-                </tr>
-            }
-
-        </tbody>
-    </table>
-
-
-
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Silməyə əminsənmi?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Sil</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <input type="hidden" asp-for="Id" />
 
 
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Əlavə et</button>
@@ -102,15 +42,101 @@
     </div>
 
 </form>
+@if (Model!=null)
+{
+    <table id="SubCategoryTable" class="table  hover">
+        <thead>
+            <tr>
+                <th class="th-sm">
+                    Seç
+                </th>
+                <th class="th-sm">
+                    ID
+                </th>
+                <th class="th-sm">
+                    Adı
+                </th>
+                <th class="th-sm">
+                    Açıqlama
+                </th>
+                <th class="th-sm">
+                    Katigorya adı
+                </th>
+                <th class="th-sm">
+                    Katigorya ID
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+
+            @for (int i = 0; i < uISubCategories.Count; i++)
+            {
+                b=false;
+                if (uISubCategories[i].CategoryId == Model.Id) { b = true; }
+                <tr>
+                    <td>
+                        <input type="checkbox" id="cb_@uISubCategories[i].Id" onclick="showDiv(@uISubCategories[i].Id)" checked="@b">
+                        <div id="div_@uISubCategories[i].Id" style="display:none">
+                            <a onclick="SaveChange(@uISubCategories[i].Id)" class="btn btn-sm btn-success">
+                                <i class="fa fa-save"></i>
+                            </a>
+
+                            <a onclick="Cancel(@uISubCategories[i].Id)" class="btn btn-sm btn-danger">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </td>
+                    <td>@uISubCategories[i].Id </td>
+                    <td>@uISubCategories[i].Name </td>
+                    <td>@uISubCategories[i].Description </td>
+                    <td>@uISubCategories[i].CategoryName </td>
+                    <td>@uISubCategories[i].CategoryId </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
 
 
 
-
-@section Scripts{
-    <script>
+    @section Scripts{
+        <script>
         $(document).ready(function () {
             $('#SubCategoryTable').DataTable();
         });
 
-    </script>
+        function showDiv(id) {
+            $("#div_" + id).show();
+            console.log(id);
+        }
+        function Cancel(id) {
+            $("#div_" + id).hide();
+        }
+
+        function SaveChange(id) {
+            var value = $("#cb_" + id).is(":checked");
+            $.ajax({
+                method: "POST",
+                url: "@Url.Action("ChangeSubCategory")",
+                type: "text",
+                data: {
+                    id: id,
+                    categoryId: "@Model.Id",
+                    value: value
+                },
+                success: function (msg) {
+                    $("#div_" + id).hide();
+                    alert(msg);
+                },
+                error: function (msg) {
+                    $("#div_" + id).hide();
+                    alert(msg);
+                }
+
+            });
+        }
+
+        </script>
+    }
 }

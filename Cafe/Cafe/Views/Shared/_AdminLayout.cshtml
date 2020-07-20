@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 
 <html>
-<head>
+<head lang="az">
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.Title</title>
     <link href="~/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
@@ -10,16 +10,12 @@
     <link href="~/twitter-bootstrap/css/bootstrap-reboot.css" rel="stylesheet" />
     <link href="~/datatables/css/jquery.dataTables.css" rel="stylesheet" />
     <link href="~/font-awesome/css/all.css" rel="stylesheet" />
-    <link href="~/customer/css/style.css" rel="stylesheet" />
-
     <style>
 
         .MenyuH {
             margin-left: 20px;
             margin-right: 10px;
         }
-
-        
     </style>
 </head>
 <body>
@@ -27,36 +23,24 @@
     <div class="d-flex" id="wrapper">
 
         <div class="bg-light border-right" id="sidebar-wrapper">
-            <!--<div class="sidebar-heading">Admin Menu </div>
-    <div class="list-group list-group-flush">
-        <a asp-controller="Category" asp-action="Index" class="list-group-item list-group-item-action bg-light">Katiqoriya</a>
-        <a class="list-group-item list-group-item-action bg-light">Shortcuts</a>
-
-        <a href="#" class="list-group-item list-group-item-action bg-light">Overview</a>
-        <a href="#" class="list-group-item list-group-item-action bg-light">Events</a>
-        <a href="#" class="list-group-item list-group-item-action bg-light">Profile</a>
-        <a href="#" class="list-group-item list-group-item-action bg-light">Status</a>
-
-    </div>
-
-    -->
-
 
 
             <div class="list-group list-group-flush">
-                <div class="sidebar-heading" >Admin Menu </div>
+                <div class="sidebar-heading">Admin Menu </div>
                 <div class="row">
-                    <div class="col" >
+                    <div class="col">
                         <div id="accordion">
-                            <div >
+                            <div>
+                                <!--Category-->
                                 <div>
-                                    <h3 >
+                                    <h5>
                                         <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                                            <span class="fa fa-list-ul MenyuH"></span>Kataqoriyalar</a>
-                                    </h3>
+                                            <span class="fa fa-list-ul MenyuH"></span>Kataqoriyalar
+                                        </a>
+                                    </h5>
                                 </div>
                                 <div id="collapseOne" class="collapse">
-                                    <div >
+                                    <div>
                                         <table class="table">
                                             <tr>
                                                 <td>
@@ -66,36 +50,59 @@
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    <span class="fa fa-sitemap text-primary"></span>
-                                                    <a href="#">Alt katiqoriyalar</a>
+                                                    <span class="fa fa-plus-circle text-primary"></span>
+                                                    <a asp-controller="Category" asp-action="Add">Katiqoriya əlave et</a>
                                                 </td>
                                             </tr>
-                                            
+                                            <tr>
+                                                <td>
+                                                    <span class="fa fa-th text-primary"></span>
+                                                    <a asp-controller="SubCategory" asp-action="AllSubCategory">AltKatiqoriya</a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span class="fa fa-plus-circle text-primary"></span>
+                                                    <a asp-controller="SubCategory" asp-action="Add">Alt katiqoriya əlave et</a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!--Product-->
+                                <div>
+                                    <h5>
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+                                            <span class="fa fa-list-ul MenyuH"></span>Məhsullar
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapseTwo" class="collapse">
+                                    <div>
+                                        <table class="table">
+                                            <tr>
+                                                <td>
+                                                    <span class="fa fa-plus-circle text-primary"></span>
+                                                    <a asp-controller="Product" asp-action="AllProduct">Bütün mesullar</a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span class="fa fa-plus-circle text-primary"></span>
+                                                    <a asp-controller="Product" asp-action="AddProduct">Elave Et</a>
+                                                </td>
+                                            </tr>
                                         </table>
                                     </div>
                                 </div>
                             </div>
-                           
                         </div>
                     </div>
                 </div>
 
             </div>
-
-                
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
+        </div>
 
 
         <!-- Page Content -->

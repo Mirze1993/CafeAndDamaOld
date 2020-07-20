@@ -9,6 +9,12 @@ namespace BLCafe.SqlQuery
     {
         Type GetTypeT => typeof(T);
 
+        public bool Delete(string id, out string query)
+        {
+            query = $"DELETE FROM {GetTypeT.Name} WHERE Id ={id} ";
+            return true;
+        }
+
         public bool GetAll(out string query, params string[] column)
         {
             query = "";
@@ -42,6 +48,12 @@ namespace BLCafe.SqlQuery
             return true;
         }
 
+        public bool GetByIdJoin<T1>(out string query)
+        {
+            var nameJoin = typeof(T1).Name;
+            query = $"SELECT * FROM {GetTypeT.Name} WHERE Id =@Id left join {nameJoin}.Id={GetTypeT.Name}.Id";
+            return true;
+        }
         public bool Insert(out string query)
         {
             string columns = "";
@@ -77,7 +89,7 @@ namespace BLCafe.SqlQuery
             if (!String.IsNullOrEmpty(columns))
             {
                 columns = columns.Remove(columns.Length - 1);
-                query = $"UPDATE  {GetTypeT.Name} set {columns} Where id={id}";
+                query = $"UPDATE  {GetTypeT.Name} set {columns} Where Id={id}";
                 return true;
             }
             return false;

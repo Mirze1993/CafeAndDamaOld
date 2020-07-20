@@ -12,7 +12,7 @@ namespace TestConsole
     {
         static void Main(string[] args)
         {
-            CategoryRepository category = new CategoryRepository();
+            //CategoryRepository category = new CategoryRepository();
             //var c= new Category()
             //{
             //    Name = "mmmm"
@@ -22,8 +22,11 @@ namespace TestConsole
             //category.Update(c,c.Id);
 
             //Console.WriteLine(Log.log);
-            var list = category.GetAll();
-            list.ForEach(c =>Console.WriteLine(c.Name));
+            // var list = category.GetAll();
+            SubCategoryRepository subCategory = new SubCategoryRepository();
+            var list = subCategory.GetUISubCategories();
+
+            list.ForEach(c =>Console.WriteLine(c.Name+" -> "+c.CategoryName));
 
             Console.ReadLine();
         }

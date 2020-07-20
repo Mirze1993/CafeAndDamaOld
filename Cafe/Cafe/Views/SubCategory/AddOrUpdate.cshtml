@@ -1,0 +1,127 @@
+﻿@model SubCategory
+@{
+    ViewData["Title"] = "AddOrUpdate";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- sub category-->
+
+
+<form method="post" asp-action="AddOrUpdate">
+    <div class="form-group">
+        <label asp-for="Name">Alt katiqoriya adı:</label>
+        <input asp-for="Name" class="form-control" required>
+        <div class="invalid-feedback">Zəhmət olmasa doldurun</div>
+
+        <label asp-for="Description">Açıqlama:</label>
+        <input asp-for="Description" class="form-control" required>
+        <div class="invalid-feedback">Zəhmət olmasa doldurun</div>
+    </div>
+
+    <input type="hidden" asp-for="Id" />
+
+
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Əlavə et</button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Düzgün əlavə etdiyinə əminsənmi?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Düzəliş et</button>
+
+                    <button type="submit" class="btn btn-primary">Yadda saxla</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+@if (Model != null)
+{
+<div>
+    Üst katiqorya: @ViewBag.CategoryName
+    <a onclick="categoryLoad()" id="categoryLoader" class="btn btn-sm btn-success">
+        <i class="fa fa-edit"></i>
+    </a>
+    <div id="divSelectCategory" style="display:none">
+        <select id="CategorySelect" class="selectpicker show-menu-arrow"> </select>
+        <a onclick="SaveChange()" class="btn btn-sm btn-success">
+            <i class="fa fa-save"></i>
+        </a>
+        <a onclick="Cancel()" class="btn btn-sm btn-danger">
+            <i class="fa fa-times"></i>
+        </a>
+    </div>
+
+</div>
+
+@section Scripts{
+    <script>
+       
+        function categoryLoad() {
+         $.ajax({
+                method: "POST",
+                url: "@Url.Action("CatigoryForDropDown","Category")",
+                type: "text",
+                success: function (msg) {
+                    var obj = jQuery.parseJSON(msg);
+                    $(obj).each(function (i, value) {
+                        console.log(value.Id);
+                        $("#CategorySelect").append($("<option>")
+                            .val(value.Id)
+                            .html(value.Name)
+                        );
+                    });
+                    $("#divSelectCategory").show();
+                    $("#categoryLoader").hide();
+                },
+             error: function (msg) {
+
+                }
+
+            });
+        }
+
+        function SaveChange() {
+            var id =@Model.Id;
+            var catId = $("#CategorySelect").val();
+            console.log(catId);
+         $.ajax({
+                method: "POST",
+                url: "@Url.Action("SaveCategory")",
+                type: "text",
+                data: {
+                    catId: catId,
+                    id: id
+                },
+                success: function (msg) {
+                    alert(msg);
+                },
+             error: function (msg) {
+
+                }
+
+            });
+        }
+
+        function Cancel() {
+            $("#divSelectCategory").hide();
+            $("#categoryLoader").show()
+        }
+
+    </script>
+}
+}
+
+

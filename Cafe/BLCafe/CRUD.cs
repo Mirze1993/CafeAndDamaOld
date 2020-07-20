@@ -19,11 +19,12 @@ namespace BLCafe
             query = new SqlQuery<T>();
         }
 
-        bool ExecuteQuery(T t, string commandText)
+        bool ExecuteQuery( string commandText, T t=null)
         {
             using (CreateSqlConnection connection = new CreateSqlConnection())
             {
                 List<SqlParameter> parametrs = new List<SqlParameter>();
+                if(t!=null)
                 foreach (var item in GetTypeT.GetProperties())
                 {                    
                     if (item.Name == "Id") continue;
@@ -31,60 +32,30 @@ namespace BLCafe
                     if (value == null) value = DBNull.Value;
                     parametrs.Add(new SqlParameter($"@{item.Name}", value));
                 }
-                connection.Open();
-                try
-                {
-                    return connection.ExecuteQuery(commandText,parametrs);
-                }
-                catch (Exception e)
-                {
-                    Log.AddLog(e.Message); return false;
-                }
+
+                return connection.ExecuteQuery(commandText,parametrs);
+               
             }
         }
 
         protected List<T> ExecuteReader(string commandText, int id = -1)
-        {
-            List<T> list = new List<T>();
+        {           
             using (CreateSqlConnection connection = new CreateSqlConnection())
             {
-                SqlCommand command = new SqlCommand(commandText, connection.Connection);
-                Log.AddLog("command create");
-                if (id > 0) command.Parameters.AddWithValue("@Id", id);
-                connection.Open();
-                try
-                {
-                    var reader=command.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        T t = new T();
-                        foreach (var item in GetTypeT.GetProperties())
-                        {
-                           var value= reader[item.Name];
-                           item.SetValue(t, value);
-                        }
-                        list.Add(t);
-                    }
-                    reader.Close();
-                    Log.AddLog("succes get");
-                    return list;
-                }
-                catch (Exception e)
-                {
-                    Log.AddLog(e.Message); return null;
-                }
-                finally
-                {
-                    command.Dispose();
-                }
+                List<SqlParameter> parametrs = null;
+                if (id > 0) parametrs=new List<SqlParameter>() {new SqlParameter("@Id",id) };
+                
+                return connection.ExecuteReader<T>(commandText, parametrs);
+               
             }
         }
 
-        async Task<bool> ExecuteQueryAsync(T t, string commandText)
+        async Task<bool> ExecuteQueryAsync(string commandText, T t = null)
         {
             using (CreateSqlConnection connection = new CreateSqlConnection())
             {
                 List<SqlParameter> parametrs = new List<SqlParameter>();
+                if(t!=null)
                 foreach (var item in GetTypeT.GetProperties())
                 {
                     if (item.Name == "Id") continue;
@@ -92,55 +63,21 @@ namespace BLCafe
                     if (value == null) value = DBNull.Value;
                     parametrs.Add(new SqlParameter($"@{item.Name}", value));
                 }
-
-                await connection.OpenAsync();
-                try
-                {
-                    return await connection.ExecuteQueryAsync(commandText, parametrs);
-                }
-                catch (Exception e)
-                {
-                    Log.AddLog(e.Message); return false;
-                }
+                
+                return await connection.ExecuteQueryAsync(commandText, parametrs);
+                
             }
         }
 
         protected async  Task<List<T>> ExecuteReaderAsync(string commandText, int id = -1)
         {
-            List<T> list = new List<T>();
+            
             using (CreateSqlConnection connection = new CreateSqlConnection())
             {
-                SqlCommand command = new SqlCommand(commandText, connection.Connection);
-                Log.AddLog("command create");
+                List<SqlParameter> parametrs = null;
+                if (id > 0) parametrs = new List<SqlParameter>() { new SqlParameter("@Id", id) };
 
-                if (id > 0) command.Parameters.AddWithValue("@Id", id);
-                
-                await connection.OpenAsync();
-                try
-                {
-                    var reader = await command.ExecuteReaderAsync();
-                    while (reader.Read())
-                    {
-                        T t = new T();
-                        foreach (var item in GetTypeT.GetProperties())
-                        {
-                            var value = reader[item.Name];
-                            item.SetValue(t, value);
-                        }
-                        list.Add(t);
-                    }
-                    reader.Close();
-                    Log.AddLog("succes get");
-                    return list;
-                }
-                catch (Exception e)
-                {
-                    Log.AddLog(e.Message); return null;
-                }
-                finally
-                {
-                    command.Dispose();
-                }
+                return await connection.ExecuteReaderAsync<T>(commandText, parametrs);
             }
         }
         
@@ -157,7 +94,7 @@ namespace BLCafe
             }
             
 
-            if (ExecuteQuery(t, cmtext))
+            if (ExecuteQuery(cmtext,t))
             {
                 Log.AddLog("succes insert");
                 return true;
@@ -168,7 +105,11 @@ namespace BLCafe
 
         public bool Delet(int id)
         {
-            throw new NotImplementedException();
+            string cmtext;
+            bool b = query.Delete(id.ToString(), out cmtext);
+            if (!b)return false;
+            if (ExecuteQuery(cmtext))return true;
+            return false;
         }
 
         public List<T> GetById(int id)
@@ -204,7 +145,7 @@ namespace BLCafe
                 Log.AddLog("Do not create query for update");
                 return false;
             }
-            if (ExecuteQuery(t, cmtext))
+            if (ExecuteQuery(cmtext,t))
             {
                 Log.AddLog("succes update");
                 return true;
@@ -250,7 +191,7 @@ namespace BLCafe
                 return Task.FromResult<bool>(false);
             }
 
-            return ExecuteQueryAsync(t, cmtext);
+            return ExecuteQueryAsync(cmtext,t);
             
         }
 
@@ -264,12 +205,20 @@ namespace BLCafe
                 return Task.FromResult(false);
             }
 
-            return ExecuteQueryAsync(t, cmtext);
+            return ExecuteQueryAsync(cmtext,t);
         }
 
         public Task<bool> DeletAsync(int id)
         {
-            throw new NotImplementedException();
+            string cmtext;
+            bool b = query.Delete(id.ToString(), out cmtext);
+            if (!b)
+            {
+                Log.AddLog("Do not create query for insert");
+                return Task.FromResult(false);
+            }
+
+            return ExecuteQueryAsync(cmtext); ;
         }
     }
 }

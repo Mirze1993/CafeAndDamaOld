@@ -1,0 +1,99 @@
+﻿@model List<UIProduct>
+
+@{
+    ViewData["Title"] = "AllProduct";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h1>AllProduct</h1>
+
+
+
+
+<div class="container">
+    <a asp-action="AddProduct" class="btn btn-primary">
+        <i class="fa fa-plus-circle">
+        </i> Add
+    </a>
+</div>
+
+<table id="Product" class="table  hover">
+    <thead>
+        <tr>
+            <th class="th-sm">
+                ID
+            </th>
+            <th class="th-sm">
+                Name
+            </th>
+            <th class="th-sm">
+                Qiyməti
+            </th>
+            <th class="th-sm">
+                Açıqlama
+            </th>
+            <th class="th-sm">
+                Katiqoriya
+            </th>
+            <th class="th-sm">
+                Edit
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @for (int i = 0; i < Model.Count; i++)
+        {
+        <tr>
+            <td>@Model[i].Id</td>
+            <td>@Model[i].Name</td>
+            <td>@Model[i].Price</td>
+            <td>@Model[i].Description</td>
+            <td>@Model[i].SubCategoryName</td>
+            <td>
+                <a onclick="showDiv(@Model[i].Id)" id="@Model[i].Id" class="btn btn-danger">
+                    <i class="fa fa-trash-alt"></i>
+                </a>
+                <div id="div_@Model[i].Id" class="row" style="display:none">
+                    Əminsənmi?
+                    <form method="post" asp-action="Delete" asp-route-Id="@Model[i].Id">
+                        <button onclick="hidenDiv(@Model[i].Id)" type="submit" id="@Model[i].Id" class="btn btn-danger">
+                            Bəli
+                        </button>
+                        <input type="hidden" name="path" value="@Model[i].ImgPath">
+                    </form>
+                    <a onclick="hidenDiv(@Model[i].Id)" class="btn btn-success">
+                        Xeyr
+                    </a>
+                </div>
+                <a asp-controller="Product" asp-action="UpdateProduct" asp-route-Id="@Model[i].Id" class="btn btn-primary">
+                    <i class="fa fa-edit"></i>
+                </a>
+            </td>
+
+        </tr>
+        }
+
+    </tbody>
+</table>
+
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#Product').DataTable();
+        });
+
+        function hidenDiv(id) {
+            var divid = "#div_" + id;
+            $(divid).hide();
+        }
+        function showDiv(id) {
+            var divid = "#div_" + id;
+            console.log(divid);
+            $(divid).show();
+        }
+
+    </script>
+}

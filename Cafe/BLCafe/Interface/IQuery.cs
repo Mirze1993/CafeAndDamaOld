@@ -10,5 +10,6 @@ namespace BLCafe.Interface
        bool Update(string id,out string query);
        bool GetAll(out string query, params string[] column);
        bool GetById(out string query);
+       bool Delete(string id, out string query);
     }
 }

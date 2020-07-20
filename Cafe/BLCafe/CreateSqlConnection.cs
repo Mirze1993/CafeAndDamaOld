@@ -65,7 +65,7 @@ namespace BLCafe
         /// </summary>
         public SqlTransaction BeginTransaction(string transactionName)
         {
-            return connection.BeginTransaction(IsolationLevel.Serializable, transactionName);
+            return Connection.BeginTransaction(IsolationLevel.Serializable, transactionName);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace BLCafe
         public async Task<SqlTransaction> BeginTransactionAsync(string transactionName)
         {
             SqlTransaction transaction = await Task.Run<SqlTransaction>(
-                () => { return connection.BeginTransaction(IsolationLevel.Serializable, transactionName); }
+                () => { return Connection.BeginTransaction(IsolationLevel.Serializable, transactionName); }
                 );
             return transaction;
         }
@@ -87,15 +87,17 @@ namespace BLCafe
         /// <returns></returns>
         public bool ExecuteQuery(string commandText, List<SqlParameter> parameters, SqlTransaction sqlTransaction = null)
         {
-            SqlCommand command = connection.CreateCommand();
+            SqlCommand command = Connection.CreateCommand();
             Log.AddLog("command create");
             try
             {
+                
                 if (sqlTransaction != null) command.Transaction = sqlTransaction;
                 command.CommandText = commandText;
 
                 if (parameters != null) command.Parameters.AddRange(parameters.ToArray());
 
+                Open();
                 return command.ExecuteNonQuery() > 0 ? true : false;
             }
             catch (Exception e)
@@ -115,9 +117,9 @@ namespace BLCafe
         /// <param name="sqlTransaction"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<bool> ExecuteQueryAsync(string commandText,  List<SqlParameter> parameters, SqlTransaction sqlTransaction = null)
+        public async Task<bool> ExecuteQueryAsync(string commandText, List<SqlParameter> parameters, SqlTransaction sqlTransaction = null)
         {
-            SqlCommand command = connection.CreateCommand();
+            SqlCommand command = Connection.CreateCommand();
             Log.AddLog("command create");
             try
             {
@@ -125,6 +127,7 @@ namespace BLCafe
                 command.CommandText = commandText;
 
                 if (parameters != null) command.Parameters.AddRange(parameters.ToArray());
+                await OpenAsync();
                 return await command.ExecuteNonQueryAsync() > 0 ? true : false;
             }
             catch (Exception e)
@@ -138,7 +141,82 @@ namespace BLCafe
         }
 
 
+        public List<T> ExecuteReader<T>(string commandText, List<SqlParameter> parameters = null) where T : class, new()
+        {
+            List<T> list = new List<T>();
+            var command = Connection.CreateCommand();
+            command.CommandText = commandText;
+            if (parameters != null) command.Parameters.AddRange(parameters.ToArray());
+            Open();
+            try
+            {
+                var result = command.ExecuteReader();
+                while (result.Read())
+                {
+                    T t = new T();
+                    foreach (var item in typeof(T).GetProperties())
+                    {
+                        try
+                        {
+                            var value = result[item.Name];
+                            item.SetValue(t, value);
+                        }
+                        catch { }
+                    }
+                    list.Add(t);
+                }
+                result.Close();
 
+            }
+            catch (Exception)
+            {
+                return new List<T>();
+            }
+            finally
+            {
+                command.Dispose();
+            }
+            return list;
+        }
+
+        public async Task<List<T>> ExecuteReaderAsync<T>(string commandText, List<SqlParameter> parameters = null) where T : class, new()
+        {
+            List<T> list = new List<T>();
+            var command = Connection.CreateCommand();
+            command.CommandText = commandText;
+            if (parameters != null) command.Parameters.AddRange(parameters.ToArray());
+            await OpenAsync();
+            try
+            {
+                var result = await command.ExecuteReaderAsync();
+                while (result.Read())
+                {
+                    T t = new T();
+                    foreach (var item in typeof(T).GetProperties())
+                    {
+                        try
+                        {
+                            var value = result[item.Name];
+                            item.SetValue(t, value);
+                        }
+                        catch { }
+                    }
+                    list.Add(t);
+                }
+                result.Close();
+
+            }
+            catch (Exception ee)
+            {
+                string a = ee.Message;
+                return new List<T>();
+            }
+            finally
+            {
+                command.Dispose();
+            }
+            return list;
+        }
 
         public void Dispose()
         {
