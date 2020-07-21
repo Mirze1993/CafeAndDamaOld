@@ -1,0 +1,94 @@
+﻿
+@{
+    ViewData["Title"] = "AllUser";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h1>AllUser</h1>
+
+<!-- add begin-->
+<div class="container">
+    <a asp-action="AddUser" class="btn btn-primary">
+        <i class="fa fa-plus-circle">
+        </i> Add
+    </a>
+</div>
+
+<div><a class="btn btn-dark" id="downloadTable">İstifadəciləri göstər</a></div>
+
+<div>
+    <div class="row">
+        <div class="col-sm">
+            <select id="selectCount" class="browser-default custom-select">
+                <option selected value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <div class="col-sm">
+            <input class="form-control" type="text" placeholder="Search" aria-label="Search">
+            <a id="sourceBtn" class="btn btn-danger">
+                <i class="fa fa-search"></i>
+            </a>
+        </div>
+    </div>
+
+</div>
+
+
+<table id="CategoryTable" class="table  hover" style="display:none">
+    <thead>
+        <tr>
+            <th class="th-sm">
+                ID
+            </th>
+            <th class="th-sm">
+                Name
+            </th>
+            
+        </tr>
+    </thead>
+    <tbody>
+            
+    </tbody>
+</table>
+
+
+
+
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#CategoryTable').DataTable();
+        });
+
+        var from = 0;
+        function DownloadData() {
+            var to = $("#selectCount").val() + from;
+
+            $.ajax({
+                method: "POST",
+                url: "@Url.Action("GetUsersForTable","User")",
+                type: "text",
+                data: {
+                    from: from,
+                    to: to
+                },
+                success: function (msg) {
+                    var result = jQuery.parseJSON(msg);
+                    $(result).each(function (i, value) {
+                        var row = "<td>" + value.Id + "</td>"
+                            + "<td>" + value.Name + "</td>"
+                        "<td>" + value.Name + "</td>"
+                        $("#myTable > tbody").append("<tr><td>row content</td></tr>");
+                    });
+                }
+            });
+        }
+
+
+    </script>
+}

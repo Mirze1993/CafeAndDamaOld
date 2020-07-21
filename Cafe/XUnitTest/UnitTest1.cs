@@ -20,80 +20,82 @@ namespace XUnitTest
         CategoryRepository category = new CategoryRepository();
         ProductRepository product = new ProductRepository();
         [Fact]
-        public void Test1()
+        public  void Test1()
         {
-            var list = product.Insert(new Product() {
-                Description="asdasd",ImgPath="wdawd",SubCategoryId=1
-            });
-            
-            output.WriteLine(list.ToString());
+            var list = product.GetAll();
+
+            foreach (var item in list)
+            {
+                output.WriteLine(item.Name.ToString());
+            }
         }
 
         [Fact]
-        public void Test2()
+        public  void Test2()
         {
-            var c = new Category()
+            var list = category.GetAll();
+            foreach (var item in list)
             {
-                Name = "21"
-            };
-            category.Insert(c);
-            c.Name = "22";
-            category.Update(c, c.Id);
-            output.WriteLine(Log.log);
+                output.WriteLine(item.Name.ToString());
+            }
+           
         }
-       
+
         [Fact]
         public void Test3()
         {
-            var c = new Category()
+            var list = product.GetById(30);
+
+            foreach (var item in list)
             {
-                Name = "31"
-            };
-           category.Insert(c);
-            c.Name = "32";
-            category.Update(c, c.Id);
-            output.WriteLine(Log.log);
+                output.WriteLine(item.Name.ToString());
+            }
         }
 
         [Fact]
         public void Test4()
         {
-            var c = new Category()
+            var list = category.GetById(30);
+
+            foreach (var item in list)
             {
-                Id = 99,
-                Name = "41"
-            };
-            category.Insert(c);
-            c.Name = "42";
-             category.Update(c, c.Id);
-            output.WriteLine(Log.log);
+                output.WriteLine(item.Name.ToString());
+            }
         }
+
 
         [Fact]
         public void Test5()
         {
-            var c = new Category()
+            var list = category.GetById(30);
+
+            foreach (var item in list)
             {
-                Name = "51"
-            };
-            category.Insert(c);
-            c.Name = "52";
-            category.Update(c, c.Id);
-            output.WriteLine(Log.log);
+                output.WriteLine(item.Name.ToString());
+            }
         }
 
         [Fact]
         public void Test6()
         {
-            var c = new Category()
+            var list = category.GetById(30);
+
+            foreach (var item in list)
             {
-                Id = 99,
-                Name = "61"
-            };
-            category.Insert(c);
-            c.Name = "62";
-            category.Update(c, c.Id);
-            output.WriteLine(Log.log);
+                output.WriteLine(item.Name.ToString());
+            }
         }
+
+        [Fact]
+        public void Test7()
+        {
+            var list = category.GetById(30);
+
+            foreach (var item in list)
+            {
+                output.WriteLine(item.Name.ToString());
+            }
+        }
+
     }
 }
