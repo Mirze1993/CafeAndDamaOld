@@ -11,5 +11,10 @@ namespace BLCafe.Interface
        bool GetAll(out string query, params string[] column);
        bool GetById(out string query);
        bool Delete(string id, out string query);
+       bool RowCount(out string query);
+       bool RowCountWithSrc(string srcClm, string srcValue, out string query);
+       bool getFromTo(int from, int to,out string query);
+       bool getFromToWithSrc(int from, int to, string srcClm, string srcValue, out string query);
+      
     }
 }

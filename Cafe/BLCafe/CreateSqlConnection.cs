@@ -28,7 +28,6 @@ namespace BLCafe
                     if (connection == null)
                     {
                         connection = new SqlConnection(connectionstring);
-                        Log.AddLog("create connection");
                     }
                     return connection;
                 }
@@ -43,7 +42,6 @@ namespace BLCafe
             if (Connection.State != ConnectionState.Open)
             {
                 Connection.Open();
-                Log.AddLog("connection open");
             }
         }
 
@@ -55,7 +53,6 @@ namespace BLCafe
             if (Connection.State != ConnectionState.Open)
             {
                 await Connection.OpenAsync();
-                Log.AddLog("connection open");
             }
         }
 
@@ -88,7 +85,6 @@ namespace BLCafe
         public bool ExecuteQuery(string commandText, List<SqlParameter> parameters, SqlTransaction sqlTransaction = null)
         {
             SqlCommand command = Connection.CreateCommand();
-            Log.AddLog("command create");
             try
             {
                 
@@ -168,7 +164,7 @@ namespace BLCafe
                 result.Close();
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return new List<T>();
             }
@@ -216,6 +212,50 @@ namespace BLCafe
                 command.Dispose();
             }
             return list;
+        }
+
+        public object ExecuteScaler(string commandText, List<SqlParameter> parameters = null)
+        {
+            object obj = null;
+            var command = Connection.CreateCommand();
+            command.CommandText = commandText;
+            if (parameters != null) command.Parameters.AddRange(parameters.ToArray());
+            Open();
+            try
+            {
+                obj = command.ExecuteScalar();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+            finally
+            {
+                command.Dispose();
+            }
+            return obj;
+        }
+
+        public async Task<object> ExecuteScalerAsync(string commandText, List<SqlParameter> parameters = null)
+        {
+            object obj = null;
+            var command = Connection.CreateCommand();
+            command.CommandText = commandText;
+            if (parameters != null) command.Parameters.AddRange(parameters.ToArray());
+             await OpenAsync();
+            try
+            {
+                obj =await command.ExecuteScalarAsync();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+            finally
+            {
+                command.Dispose();
+            }
+            return obj;
         }
 
         public void Dispose()

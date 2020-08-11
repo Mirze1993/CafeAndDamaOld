@@ -8,9 +8,11 @@
     <link href="~/twitter-bootstrap/css/bootstrap-grid.min.css" rel="stylesheet" />
     <link href="~/twitter-bootstrap/css/bootstrap-reboot.css" rel="stylesheet" />
 </head>
-<body>
+
+
+<body class="d-flex flex-column min-vh-100">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Navbar</a>
+        <a class="navbar-brand" asp-action="index" asp-controller="Home">Home</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -18,42 +20,23 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" asp-controller="Admin" asp-action="AdminIndex">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" asp-controller="Admin" asp-action="AdminIndex">Admin <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Link</a>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Dropdown
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-                </li>
+                
+               
             </ul>
 
             <ul class="nav justify-content-end">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">Active</a>
+                    <a asp-controller="Home" asp-action="login" class="nav-link active">Giris</a>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Dropdown
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
+                <li class="nav-item">
+                    <a asp-controller="Home" asp-action="signup" class="nav-link active">qeydiyyat</a>
                 </li>
+
                 <li class="nav-item avatar dropdown">
                     <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-55" data-toggle="dropdown"
                        aria-haspopup="true" aria-expanded="false">
@@ -76,8 +59,8 @@
     </div>
 
 
-    wdwdqd
-    <footer id="sticky-footer" class="py-4 bg-dark text-white-50">
+    
+    <footer id="sticky-footer" class="py-4 align-bottom bg-dark text-white-50">
         <div class="container text-center">
             <small>Copyright &copy; Your Website</small>
         </div>
@@ -85,6 +68,8 @@
 
 
     <script src="~/jquery/jquery.min.js"></script>
+    <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
     <script src="~/twitter-bootstrap/js/bootstrap.bundle.js"></script>
 </body>
 </html>

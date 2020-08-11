@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Cryptography;
 
 namespace TestConsole
 {
@@ -23,16 +24,31 @@ namespace TestConsole
 
             //Console.WriteLine(Log.log);
             // var list = category.GetAll();
-            SubCategoryRepository subCategory = new SubCategoryRepository();
-            var list = subCategory.GetUISubCategories();
+            //SubCategoryRepository subCategory = new SubCategoryRepository();
+            //var list = subCategory.GetUISubCategories();
 
-            list.ForEach(c =>Console.WriteLine(c.Name+" -> "+c.CategoryName));
+            //list.ForEach(c =>Console.WriteLine(c.Name+" -> "+c.CategoryName));
 
+            //Console.ReadLine();
+
+            //HashTest hashTest = new HashTest();
+            //string a;
+            //Console.WriteLine(a= hashTest.CreateHashString("mirze"));
+
+            //Console.WriteLine(hashTest.Verify("mirze", a));
+            //Console.WriteLine(hashTest.Verify("mirrze", a));
+            //Console.WriteLine(hashTest.Verify("mirzere", a));
+            //Console.WriteLine(hashTest.Verify("mirzgere", a));
+            //Console.WriteLine(hashTest.Verify("mirze", a));
+
+            select(x => (x.Name == "mirze").ToString());
+
+            
             Console.ReadLine();
         }
 
 
-        public static void select(Expression <Func<Category,object>> t)
+        public static void select(Expression <Func<Category,string>> t)
         {
             //PropertyInfo p;
             //if (t.Body is MemberExpression)
@@ -49,7 +65,7 @@ namespace TestConsole
            
             
 
-            Console.WriteLine();
+            Console.WriteLine(t.Body);
             //Console.WriteLine(m.Right);
             
         }

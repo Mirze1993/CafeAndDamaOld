@@ -7,52 +7,92 @@
 <h1>AllUser</h1>
 
 <!-- add begin-->
-<div class="container">
-    <a asp-action="AddUser" class="btn btn-primary">
-        <i class="fa fa-plus-circle">
-        </i> Add
-    </a>
-</div>
 
-<div><a class="btn btn-dark" id="downloadTable">İstifadəciləri göstər</a></div>
 
-<div>
-    <div class="row">
-        <div class="col-sm">
-            <select id="selectCount" class="browser-default custom-select">
-                <option selected value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-            </select>
-        </div>
-        <div class="col-sm">
-            <input class="form-control" type="text" placeholder="Search" aria-label="Search">
-            <a id="sourceBtn" class="btn btn-danger">
-                <i class="fa fa-search"></i>
-            </a>
-        </div>
+<div><a class="btn btn-success" id="showDate" onclick="DownloadData()">İstifadəciləri göstər</a></div>
+
+<div id="DateTable" style="display:none">
+
+
+    <div class="container">
+        <a href="#" id="editLink" class="btn btn-primary">
+            <i class="fa fa-edit">
+            </i> Edit
+        </a>
     </div>
 
+
+    <div>
+        <div class="row">
+            <div class="col-sm">
+                <select id="selectCount" onchange="DownloadData()" class="browser-default custom-select">
+                    <option selected value="1">10</option>
+                    <option value="2">20</option>
+                    <option value="3">50</option>
+                    <option value="10">100</option>
+                </select>
+            </div>
+
+            <div class="col-sm"></div>
+
+            <div class="col-sm">
+                <select id="srcFor" class="browser-default custom-select">
+                    <option selected value="Name">Ad</option>
+                    <option value="UserName">UserName</option>
+                    <option value="Phone">Phone</option>
+                    <option value="Email">Email</option>
+                </select>
+            </div>
+            <div class="col-sm">
+                
+                <div class="input-group mb-3">
+                    <input type="text" id="searchUserText" class="form-control" placeholder="Search">
+                    <div class="input-group-append">
+                        <button class="btn btn-success" onclick="Src()" type="submit">Axtar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <table id="UserTable" class="table  hover">
+        <thead>
+            <tr>
+                <th class="th-sm">
+                    ID
+                </th>
+                <th class="th-sm">
+                    Name
+                </th>
+                <th class="th-sm">
+                    UserName
+                </th>
+                <th class="th-sm">
+                    Phone
+                </th>
+                <th class="th-sm">
+                    Email
+                </th>
+
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <p id="pCount"></p>
+    <nav aria-label="Page navigation example">
+        <ul id="pageCounter" class="pagination">
+            <li class="page-item"><a class="page-link" onclick="Previous()">Previous</a></li>
+            <li class="page-item"><a class="page-link" onclick="Next()">Next</a></li>
+        </ul>
+    </nav>
+
+
 </div>
 
-
-<table id="CategoryTable" class="table  hover" style="display:none">
-    <thead>
-        <tr>
-            <th class="th-sm">
-                ID
-            </th>
-            <th class="th-sm">
-                Name
-            </th>
-            
-        </tr>
-    </thead>
-    <tbody>
-            
-    </tbody>
-</table>
 
 
 
@@ -60,35 +100,105 @@
 
 
 @section Scripts{
-    <script>
-        $(document).ready(function () {
-            $('#CategoryTable').DataTable();
-        });
+<script>
 
-        var from = 0;
+        function Next(){
+            from = parseInt($("#selectCount").val()) + from;
+            if (from <= countp) DownloadData();
+            else from = from- parseInt($("#selectCount").val());
+        }
+        function Previous() {
+
+            if (from > 0) {
+                if (from == 1) return;
+                from = from - parseInt($("#selectCount").val());
+                if (from < 1) from = 1
+                DownloadData();
+            }
+        }
+
+        function Src() {
+            from = 1;
+            DownloadData();
+        }
+
+        var from = 1;
+        var countp = 0;
         function DownloadData() {
-            var to = $("#selectCount").val() + from;
+            var src = $("#searchUserText").val();
+            var srcFor = $("#srcFor").val();
+            var to = parseInt($("#selectCount").val()) + parseInt(from)-1;
 
+            console.log(to);
             $.ajax({
                 method: "POST",
                 url: "@Url.Action("GetUsersForTable","User")",
                 type: "text",
                 data: {
                     from: from,
-                    to: to
+                    to: to,
+                    srcFor: srcFor,
+                    src: src                    
                 },
                 success: function (msg) {
-                    var result = jQuery.parseJSON(msg);
+                    console.log(msg);
+                    var result = jQuery.parseJSON(msg[1]);
+                    $("#UserTable > tbody").html("");
+                    $("#pCount").html("");
+
+                    countp = msg[0];
+
+                    if (to > countp) $("#pCount").append(from + "-" + countp + "/" + countp);
+                    else $("#pCount").append(from + "-" + to + "/" + countp);
+
+
                     $(result).each(function (i, value) {
-                        var row = "<td>" + value.Id + "</td>"
+                        var row = "<tr><td>" + value.Id + "</td>"
                             + "<td>" + value.Name + "</td>"
-                        "<td>" + value.Name + "</td>"
-                        $("#myTable > tbody").append("<tr><td>row content</td></tr>");
+                            + "<td>" + value.UserName + "</td>"
+                            + "<td>" + value.Phone + "</td>"
+                            + "<td>" + value.Email + "</td></tr>"
+
+                        $("#UserTable > tbody").append(row);
                     });
+                     highlight_row();
                 }
             });
+            $("#DateTable").show();
+            $("#showDate").hide();
+
         }
 
 
-    </script>
+
+        function highlight_row() {
+            var table = document.getElementById('UserTable');
+            var cells = table.getElementsByTagName('td');
+
+            for (var i = 0; i < cells.length; i++) {
+                // Take each cell
+                var cell = cells[i];
+                // do something on onclick event for cell
+                cell.onclick = function () {
+                    // Get the row id where the cell exists
+                    var rowId = this.parentNode.rowIndex;
+
+                    var rowsNotSelected = table.getElementsByTagName('tr');
+                    for (var row = 0; row < rowsNotSelected.length; row++) {
+                        rowsNotSelected[row].style.backgroundColor = "";
+                    }
+                    var rowSelected = table.getElementsByTagName('tr')[rowId];
+                    rowSelected.style.backgroundColor = "yellow";
+
+                    //msg = 'ID ' + rowSelected.cells[0].innerHTML;
+                    // msg += '\nThe cell value is: ' + this.innerHTML;
+                    $("#editLink").attr("href", "/User/UpdateUser/" + rowSelected.cells[0].innerHTML);
+
+                }
+            }
+
+        }
+
+
+</script>
 }

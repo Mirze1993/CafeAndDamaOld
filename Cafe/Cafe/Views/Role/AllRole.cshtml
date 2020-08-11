@@ -1,0 +1,90 @@
+﻿@model List<Role>
+@{
+    ViewData["Title"] = "AllRole";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h1>AllRole</h1>
+<!-- add begin-->
+<div class="container">
+    <a asp-action="Add" class="btn btn-primary">
+        <i class="fa fa-plus-circle">
+        </i> Add
+    </a>
+</div>
+
+<table id="CategoryTable" class="table  hover">
+    <thead>
+        <tr>
+            <th class="th-sm">
+                ID
+            </th>
+            <th class="th-sm">
+                Name
+            </th>
+            <th class="th-sm">
+                Description
+            </th>
+            <th class="th-sm">
+                Edit
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @for (int i = 0; i < Model.Count; i++)
+        {
+        <tr>
+            <td>@Model[i].Id</td>
+            <td>@Model[i].Name</td>
+            <td>@Model[i].Description</td>
+            <td>
+                <a onclick="showDiv(@Model[i].Id)" id="@Model[i].Id" class="btn btn-danger">
+                    <i class="fa fa-trash-alt"></i>
+                </a>
+                <div id="div_@Model[i].Id" class="row" style="display:none">
+                    Əminsənmi?
+                    <form method="post" asp-action="Delete" asp-route-Id="@Model[i].Id">
+                        <button onclick="hidenDiv(@Model[i].Id)" type="submit" id="@Model[i].Id" class="btn btn-danger">
+                            Bəli
+                        </button>
+                    </form>
+                    <a onclick="hidenDiv(@Model[i].Id)" class="btn btn-success">
+                        Xeyr
+                    </a>
+                </div>
+
+                <a  asp-action="Update" asp-route-Id="@Model[i].Id" class="btn btn-primary">
+                    <i class="fa fa-edit"></i>
+                </a>
+            </td>
+
+        </tr>
+        }
+
+    </tbody>
+</table>
+
+
+
+
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#CategoryTable').DataTable();
+        });
+
+        function hidenDiv(id) {
+            var divid = "#div_" + id;
+            $(divid).hide();
+        }
+        function showDiv(id) {
+            var divid = "#div_" + id;
+            console.log(divid);
+            $(divid).show();
+        }
+
+    </script>
+}

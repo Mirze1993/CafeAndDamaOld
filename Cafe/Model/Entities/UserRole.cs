@@ -7,7 +7,7 @@ namespace Model.Entities
 {
     public class UserRole:IEntity
     {
-        public int UserId { get; set; }
+        public int AppUserId { get; set; }
         public int RoleId { get; set; }
     }
 }

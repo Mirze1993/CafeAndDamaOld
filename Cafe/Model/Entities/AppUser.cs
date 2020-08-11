@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Model.Entities
 {
-    public class User :IEntity
+    public class AppUser :IEntity
     {
         public int Id { get; set; }
 

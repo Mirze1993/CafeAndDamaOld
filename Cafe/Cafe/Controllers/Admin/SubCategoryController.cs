@@ -39,7 +39,7 @@ namespace Cafe.Controllers.Admin
         {
             bool b;
             if (subCategory.Id > 0) b = await repository.UpdateAsync(subCategory, subCategory.Id);
-            else b = await repository.InsertAsync(subCategory);
+            else b = await repository.InsertAsync(subCategory)>0;
             if (b)
                 return RedirectToAction("AllSubCategory");
             return View("AddOrUpdate");

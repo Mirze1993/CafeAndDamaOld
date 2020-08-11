@@ -1,0 +1,152 @@
+﻿@model AppUser
+@{
+    ViewData["Title"] = "UpdateUser";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    List<Role> allRoles = ViewBag.Roles;
+    List<UserRole> userRoles = ViewBag.UserRole;
+    bool b;
+}
+
+<h1>UpdateUser</h1>
+<!--user update-->
+<form method="post" asp-action="UpdateUser">
+    <div class="form-group">
+        <label asp-for="Name">Adı:</label>
+        <input asp-for="Name" class="form-control" required>
+        <div class="invalid-feedback">Zəhmət olmasa doldurun</div>
+    </div>
+
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="UserName">İstifadəçi adı:</label>
+        <input asp-for="UserName" class="form-control" required>
+        <div class="invalid-feedback">Zəhmət olmasa doldurun</div>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Phone">Telfon nömrəsi:</label>
+        <input asp-for="Phone" class="form-control" required>
+        <div class="invalid-feedback">Zəhmət olmasa doldurun</div>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email">Mail</label>
+        <input asp-for="Email" class="form-control" required>
+        <div class="invalid-feedback">Zəhmət olmasa doldurun</div>
+    </div>
+
+
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Əlavə et</button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Düzgün əlavə etdiyinə əminsənmi?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Düzəliş et</button>
+
+                    <button type="submit" class="btn btn-primary">Yadda saxla</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<table id="SubCategoryTable" class="table  hover">
+    <thead>
+        <tr>
+            <th class="th-sm">
+                Seç
+            </th>
+            <th class="th-sm">
+                ID
+            </th>
+            <th class="th-sm">
+                Adı
+            </th>
+            <th class="th-sm">
+                Açıqlama
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @for (int i = 0; i < allRoles.Count; i++)
+        {
+            b = false;
+
+            if (userRoles.Any(ur => ur.RoleId == allRoles[i].Id)) { b = true; }
+            <tr>
+                <td>
+                    <input type="checkbox" id="cb_@allRoles[i].Id" onclick="showDiv(@allRoles[i].Id)" checked="@b">
+                    <div id="div_@allRoles[i].Id" style="display:none">
+                        <a onclick="SaveChange(@allRoles[i].Id)" class="btn btn-sm btn-success">
+                            <i class="fa fa-save"></i>
+                        </a>
+
+                        <a onclick="Cancel(@allRoles[i].Id)" class="btn btn-sm btn-danger">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </td>
+                <td>@allRoles[i].Id </td>
+                <td>@allRoles[i].Name </td>
+                <td>@allRoles[i].Description </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#SubCategoryTable').DataTable();
+        });
+
+        function showDiv(id) {
+            $("#div_" + id).show();
+            console.log(id);
+        }
+        function Cancel(id) {
+            $("#div_" + id).hide();
+        }
+
+        function SaveChange(roleid) {
+            var value = $("#cb_" + roleid).is(":checked");
+            $.ajax({
+                method: "POST",
+                url: "@Url.Action("AddAndRemoveRole","User")",
+                type: "text",
+                data: {
+                    roleId: roleid,
+                    userId: "@Model.Id",
+                    value: value
+                },
+                success: function (msg) {
+                    $("#div_" + roleid).hide();
+                    alert(msg);
+                },
+                error: function (msg) {
+                    $("#div_" + roleid).hide();
+                    alert(msg);
+                }
+
+            });
+        }
+
+    </script>
+}

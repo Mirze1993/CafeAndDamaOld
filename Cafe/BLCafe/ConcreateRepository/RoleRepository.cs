@@ -7,5 +7,6 @@ namespace BLCafe.ConcreateRepository
 {
     public class RoleRepository:CRUD<Role>
     {
+        
     }
 }

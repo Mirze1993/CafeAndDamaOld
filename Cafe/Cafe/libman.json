@@ -10,7 +10,6 @@
       "library": "jquery@3.5.1",
       "destination": "wwwroot/jquery/"
     },
-    
     {
       "library": "datatables@1.10.20",
       "destination": "wwwroot/datatables/"
@@ -18,6 +17,17 @@
     {
       "library": "font-awesome@5.13.1",
       "destination": "wwwroot/font-awesome/"
+    },
+    {
+      "library": "jquery-validate@1.19.2",
+      "destination": "wwwroot/lib/jquery-validate/",
+      "files": [
+        "jquery.validate.min.js"
+      ]
+    },
+    {
+      "library": "jquery-validation-unobtrusive@3.2.11",
+      "destination": "wwwroot/lib/jquery-validation-unobtrusive/"
     }
   ]
 }

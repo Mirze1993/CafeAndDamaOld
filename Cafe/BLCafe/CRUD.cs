@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BLCafe
 {
-    public class CRUD<T> : ICRUD<T> where T : class,IEntity, new()
+    public abstract class CRUD<T> : ICRUD<T> where T : class,IEntity, new()
     {
         Type GetTypeT => typeof(T);
         IQuery<T> query;
@@ -38,7 +38,26 @@ namespace BLCafe
             }
         }
 
-        protected List<T> ExecuteReader(string commandText, int id = -1)
+        object ExecuteScaller(string commandText, T t = null)
+        {
+            using (CreateSqlConnection connection = new CreateSqlConnection())
+            {
+                List<SqlParameter> parametrs = new List<SqlParameter>();
+                if (t != null)
+                    foreach (var item in GetTypeT.GetProperties())
+                    {
+                        if (item.Name == "Id") continue;
+                        object value = item.GetValue(t);
+                        if (value == null) value = DBNull.Value;
+                        parametrs.Add(new SqlParameter($"@{item.Name}", value));
+                    }
+
+                return connection.ExecuteScaler(commandText, parametrs);
+
+            }
+        }
+
+        public List<T> ExecuteReader(string commandText, int id = -1)
         {           
             using (CreateSqlConnection connection = new CreateSqlConnection())
             {
@@ -49,6 +68,7 @@ namespace BLCafe
                
             }
         }
+
 
         async Task<bool> ExecuteQueryAsync(string commandText, T t = null)
         {
@@ -69,7 +89,26 @@ namespace BLCafe
             }
         }
 
-        protected async  Task<List<T>> ExecuteReaderAsync(string commandText, int id = -1)
+        async Task<object> ExecuteScallerAsync(string commandText, T t = null)
+        {
+            using (CreateSqlConnection connection = new CreateSqlConnection())
+            {
+                List<SqlParameter> parametrs = new List<SqlParameter>();
+                if (t != null)
+                    foreach (var item in GetTypeT.GetProperties())
+                    {
+                        if (item.Name == "Id") continue;
+                        object value = item.GetValue(t);
+                        if (value == null) value = DBNull.Value;
+                        parametrs.Add(new SqlParameter($"@{item.Name}", value));
+                    }
+
+                return await connection.ExecuteScalerAsync(commandText, parametrs);
+
+            }
+        }
+
+        public async  Task<List<T>> ExecuteReaderAsync(string commandText, int id = -1)
         {
             
             using (CreateSqlConnection connection = new CreateSqlConnection())
@@ -82,28 +121,17 @@ namespace BLCafe
         }
         
 
-        public bool  Insert(T t)
+        public virtual  int  Insert(T t)
         {
-           
             string cmtext;
             bool b = query.Insert(out cmtext);
-            if (!b)
-            {
-                Log.AddLog("Do not create query for insert");
-                return false;
-            }
-            
-
-            if (ExecuteQuery(cmtext,t))
-            {
-                Log.AddLog("succes insert");
-                return true;
-            };
-            Log.AddLog("unsucces insert");
-            return false;
+            if (!b) return 0;
+            var id= ExecuteScaller(cmtext, t);
+            if (id != null) return Convert.ToInt32(id);
+            else return 0;
         }
 
-        public bool Delet(int id)
+        public virtual bool Delet(int id)
         {
             string cmtext;
             bool b = query.Delete(id.ToString(), out cmtext);
@@ -112,7 +140,7 @@ namespace BLCafe
             return false;
         }
 
-        public List<T> GetById(int id)
+        public virtual List<T> GetById(int id)
         {
             string cmtext;
             bool b = query.GetById(out cmtext);
@@ -124,7 +152,7 @@ namespace BLCafe
             return list;
         }
 
-        public List<T> GetAll(params string[] column)
+        public virtual List<T> GetAll(params string[] column)
         {
             string cmtext;
             bool b = query.GetAll(out cmtext,column);
@@ -135,7 +163,7 @@ namespace BLCafe
             return ExecuteReader(cmtext);
         }
 
-        public bool Update(T t, int id)
+        public virtual bool Update(T t, int id)
         {
 
             string cmtext;
@@ -154,10 +182,58 @@ namespace BLCafe
             return false;
         }
 
+        public virtual int RowCount()
+        {
+            object o;
+            using (CreateSqlConnection connection = new CreateSqlConnection())
+            {
+                string cmtext;
+                bool b = query.RowCount(out cmtext);
+                o = connection.ExecuteScaler(cmtext);
+            }
+            if (o != null) return Convert.ToInt32(o);
+            else return 0;
+        }
+
+        public virtual int RowCountWithSrc(string srcClm, string srcValue)
+        {
+            object o;
+            using (CreateSqlConnection connection = new CreateSqlConnection())
+            {
+                string cmtext;
+                bool b = query.RowCountWithSrc(srcClm,srcValue,out cmtext);
+                o = connection.ExecuteScaler(cmtext);
+            }
+            if (o != null) return Convert.ToInt32(o);
+            else return 0;
+        }
+
+        public virtual List<T> getFromTo(int from, int to)
+        {
+            string cmtext;
+            bool b = query.getFromTo(from,to,out cmtext);
+            if (!b)
+            {
+                Log.AddLog("Do not create query for getAll");
+            }
+            return ExecuteReader(cmtext);
+        }
+
+        public virtual List<T> getFromToWithSrc(int from, int to, string srcClm, string srcValue)
+        {
+            string cmtext;
+            bool b = query.getFromToWithSrc(from, to, srcClm, srcValue, out cmtext);
+            if (!b)
+            {
+                Log.AddLog("Do not create query for getAll");
+            }
+            return ExecuteReader(cmtext);
+        }
+
+        
 
 
-
-        public Task<List<T>> GetAllAsync(params string[] column)
+        public virtual Task<List<T>> GetAllAsync(params string[] column)
         {
             string cmtext;
             bool b = query.GetAll(out cmtext, column);
@@ -168,7 +244,7 @@ namespace BLCafe
             return ExecuteReaderAsync(cmtext);
         }
 
-        public Task<List<T>> GetByIdAsync(int id)
+        public virtual Task<List<T>> GetByIdAsync(int id)
         {
             string cmtext;
             bool b = query.GetById(out cmtext);
@@ -181,21 +257,18 @@ namespace BLCafe
             return list;
         }
 
-        public Task<bool> InsertAsync(T t)
+        public virtual Task<int> InsertAsync(T t)
         {
             string cmtext;
             bool b = query.Insert(out cmtext);
-            if (!b)
-            {
-                Log.AddLog("Do not create query for insert");
-                return Task.FromResult<bool>(false);
-            }
+            if (!b) return Task.FromResult(0);
+            var id = ExecuteScaller(cmtext, t);
+            if (id != null) return Task.FromResult(Convert.ToInt32(id));
+            else return Task.FromResult(0);
 
-            return ExecuteQueryAsync(cmtext,t);
-            
         }
 
-        public Task<bool> UpdateAsync(T t, int id)
+        public virtual Task<bool> UpdateAsync(T t, int id)
         {
             string cmtext;
             bool b = query.Update(id.ToString(),out cmtext);
@@ -208,7 +281,7 @@ namespace BLCafe
             return ExecuteQueryAsync(cmtext,t);
         }
 
-        public Task<bool> DeletAsync(int id)
+        public virtual Task<bool> DeletAsync(int id)
         {
             string cmtext;
             bool b = query.Delete(id.ToString(), out cmtext);
@@ -220,5 +293,28 @@ namespace BLCafe
 
             return ExecuteQueryAsync(cmtext); ;
         }
+        
+        public virtual Task<List<T>> getFromToAsync(int from, int to)
+        {
+            string cmtext;
+            bool b = query.getFromTo(from, to, out cmtext);
+            if (!b)
+            {
+                Log.AddLog("Do not create query for getAll");
+            }
+            return ExecuteReaderAsync(cmtext);
+        }
+         
+        public virtual Task<List<T>> getFromToWithSrcAsync(int from, int to, string srcClm, string srcValue)
+        {
+            string cmtext;
+            bool b = query.getFromToWithSrc(from, to, srcClm, srcValue, out cmtext);
+            if (!b)
+            {
+                Log.AddLog("Do not create query for getAll");
+            }
+            return ExecuteReaderAsync(cmtext);
+        }
+
     }
 }
