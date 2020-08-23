@@ -1,4 +1,4 @@
-﻿
+﻿@model UILogin
 @{
     ViewData["Title"] = "Login";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -15,37 +15,40 @@
                     <a href="#">Forgot password?</a>
                 </div>
             </div>
+
+            
             <div style="padding-top: 30px;" class="card-block">
                 <div style="display: none;" id="login-alert" class="alert alert-danger col-md-12"></div>
-                <form id="loginform" class="" role="form">
-                    <div style="margin-bottom: 25px;" class="input-group">
-                        <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                        <input id="login-username" type="text" class="form-control" name="username" value=""
-                               placeholder="username or email" />
-                    </div>
-                    <div style="margin-bottom: 25px;" class="input-group">
-                        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                        <input id="login-password" type="password" class="form-control" name="password"
-                               placeholder="password" />
-                    </div>
+                <form asp-action="login" asp-controller="Home" method="post">
+                    <div asp-validation-summary="All"></div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            
+                            <input  placeholder="UserName" asp-for="UserName" class="form-control">
+                        </div> <!-- input-group.// -->
+                    </div> <!-- form-group// -->
+                    <div class="form-group">
+                        <div class="input-group">
+                            
+                            <input placeholder="Password"  class="form-control" asp-for="Password">
+                        </div> <!-- input-group.// -->
+                    </div> <!-- form-group// -->
+
                     <div class="input-group">
                         <div class="form-check">
                             <label>
-                                <input id="login-remember" type="checkbox" name="remember" value="1" />Remember me
+                                <input  asp-for="RememberMe" />Remember me
                             </label>
                         </div>
                     </div>
-                    <div style="margin-top: 10px;" class="form-group">
-                        <!-- Button -->
-
-                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block"> Login  </button>
+                    </div> <!-- form-group// -->
+                    <p class="text-center"><a href="#" class="btn">Forgot password?</a></p>
                     <div class="form-group">
                         <div class="col-lg-12 control">
                             <div style="padding-top: 15px; font-size: 85%;">
-                                Don't have an account! <a href="#" onclick="$('#loginbox').hide(); $('#signupbox').show()">
-                                    Sign Up Here
-
-                                </a>
+                                <a asp-action="Signup">Qeydiyyat </a>
                             </div>
                         </div>
                     </div>

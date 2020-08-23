@@ -6,7 +6,11 @@
     <title>@ViewBag.Title</title>
     <link href="~/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
     <link href="~/twitter-bootstrap/css/bootstrap-grid.min.css" rel="stylesheet" />
+    <link href="~/customer/css/simple-sidebar.css" rel="stylesheet" />
     <link href="~/twitter-bootstrap/css/bootstrap-reboot.css" rel="stylesheet" />
+    <link href="~/datatables/css/jquery.dataTables.css" rel="stylesheet" />
+    <link href="~/font-awesome/css/all.css" rel="stylesheet" />
+
 </head>
 
 
@@ -22,34 +26,30 @@
                 <li class="nav-item active">
                     <a class="nav-link" asp-controller="Admin" asp-action="AdminIndex">Admin <span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
+                <li class="nav-item active">
+                    <a class="nav-link" asp-controller="UserHome" asp-action="Index">Admin </a>
                 </li>
-                
-               
+
+
             </ul>
 
             <ul class="nav justify-content-end">
-                <li class="nav-item">
-                    <a asp-controller="Home" asp-action="login" class="nav-link active">Giris</a>
-                </li>
-                <li class="nav-item">
-                    <a asp-controller="Home" asp-action="signup" class="nav-link active">qeydiyyat</a>
-                </li>
 
-                <li class="nav-item avatar dropdown">
-                    <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-55" data-toggle="dropdown"
-                       aria-haspopup="true" aria-expanded="false">
-                        <img src="https://mdbootstrap.com/img/Photos/Avatars/avatar-2.jpg" class="rounded-circle" style="width:25px;height:25px"
-                             alt="avatar image">
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-lg-right dropdown-secondary"
-                         aria-labelledby="navbarDropdownMenuLink-55">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                </li>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li class="nav-item">
+                        <a asp-controller="Home" asp-action="logout" class="nav-link active">cixis @User.Identity.Name</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a asp-controller="Home" asp-action="login" class="nav-link active">Giris</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="Home" asp-action="signup" class="nav-link active">qeydiyyat</a>
+                    </li>
+                }
             </ul>
         </div>
     </nav>
@@ -59,8 +59,8 @@
     </div>
 
 
-    
-    <footer id="sticky-footer" class="py-4 align-bottom bg-dark text-white-50">
+    <br /><br />
+    <footer id="sticky-footer" class="py-4 bg-dark text-white-50">
         <div class="container text-center">
             <small>Copyright &copy; Your Website</small>
         </div>
@@ -68,8 +68,10 @@
 
 
     <script src="~/jquery/jquery.min.js"></script>
+    <script src="~/datatables/js/jquery.dataTables.js"></script>
     <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
     <script src="~/twitter-bootstrap/js/bootstrap.bundle.js"></script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

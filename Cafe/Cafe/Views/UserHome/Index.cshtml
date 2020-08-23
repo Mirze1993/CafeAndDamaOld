@@ -1,0 +1,313 @@
+﻿
+@{
+    ViewData["Title"] = "IndexUser";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Dictionary<string, DateTime> users = ViewBag.ActiveUser;
+    var userid = User.Claims.FirstOrDefault(x => x.Type ==System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+    int id = 0;
+    if (userid != null) { id = Convert.ToInt32(userid); };
+}
+<!--UserHome-->
+<div class="container">
+
+    <div class="row">
+
+        <!-- Main content -->
+        <div class="col-md-8">
+            <h1 class="my-4">
+                @User.Identity.Name
+                <small>oyun otagim </small>
+            </h1>
+            <!-- Blog Post -->
+            <div class="card mb-4">
+
+                <div class="card-body">
+                    <h2 class="card-title">geden istekler</h2>
+                    <table id="WaitRequest" class="table  hover">
+                        <thead>
+                            <tr>
+                                <th class="th-sm">
+                                    RequestUser
+                                </th>
+                                <th class="th-sm">
+                                    AcceptUser
+                                </th>
+                                <th class="th-sm">
+                                    Status
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--with jquery download-->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <!-- Blog Post -->
+            <div class="card mb-4">
+
+                <div class="card-body">
+                    <h2 class="card-title">Gelen istekler</h2>
+                    <table id="WaitAccept" class="table  hover">
+                        <thead>
+                            <tr>
+                                <th class="th-sm">
+                                    RequestUser
+                                </th>
+                                <th class="th-sm">
+                                    AcceptUser
+                                </th>
+                                <th class="th-sm">
+                                    Status
+                                </th>
+                                <th class="th-sm">
+                                    Tesdiqle
+                                </th>
+                                <th class="th-sm">
+                                    Levg et
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--with jquery download-->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <!-- Blog Post -->
+            <div class="card mb-4">
+
+                <div class="card-body">
+                    <h2 class="card-title">Aktiv oyunlar</h2>
+                    <table id="Start" class="table  hover">
+                        <thead>
+                            <tr>
+                                <th class="th-sm">
+                                    RequestUser
+                                </th>
+                                <th class="th-sm">
+                                    AcceptUser
+                                </th>
+                                <th class="th-sm">
+                                    Status
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--with jquery download-->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- Sidebar Widgets Column -->
+        <div class="col-md-4">
+
+            <!-- Search Widget -->
+            <div class="card my-4">
+                <h5 class="card-header">Search</h5>
+                <div class="card-body">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search for...">
+                        <span class="input-group-append">
+                            <button class="btn btn-secondary" type="button">Go!</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Widget -->
+            <div class="card my-4">
+                <h5 class="card-header">Menyu</h5>
+                <div class="card-body">
+                    <div class="row">
+                        <ul class="list-unstyled mb-0">
+                            <li>
+                                <a href="#">Statistikalar</a>
+                            </li>
+                            <li>
+                                <a href="#">Mesajlar</a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    Bildirisler
+                                    <span style="display:none" class="badge badge-primary float-right"></span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">Profil</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usrers -->
+            <div class="card my-4">
+                <h5 class="card-header">online users</h5>
+                <div class="card-body">
+                    <table id="OnlineUser" class="table  hover">
+                        <thead>
+                            <tr>
+                                <th class="th-sm">
+                                    Name
+                                </th>
+                                <th class="th-sm">
+                                    IstekGonder
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @for (int i = 0; i < users.Count; i++)
+                            {
+                                if (@users.ElementAt(i).Key.Equals(User.Identity.Name)) { continue; }
+                                <tr>
+
+                                    <td>@users.ElementAt(i).Key</td>
+                                    <td>
+                                        <a onclick="RequestGame('@users.ElementAt(i).Key')" class="btn btn-danger">
+                                            <i class="fa fa-envelope-square"></i>
+                                        </a>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <!-- Side Widget -->
+            <div class="card my-4">
+                <h5 class="card-header">Sexsi melumatlar</h5>
+                <div class="card-body">
+                    @User.Identity.Name xos gelmisiniz.Profil melumatlarinizi gormek ve ve ya yenilemek ucun <a href="#">profil</a> melumatlarina kecid edin
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+</div>
+
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#OnlineUser').DataTable();
+            var timer = setInterval(CheckGamesDB, 1000);
+        });
+
+        function RequestGame(name) {
+            var a = confirm("oyun deveti gondermeye eminsinizmi?");
+            if (a) {
+                $.ajax({
+                    method: "post",
+                    dataType: "text",
+                    url: "@Url.Action("RequestGame","UserHome")",
+                    data: {
+                        username:name
+                    },
+                    success: function (msg) {
+                        alert(msg);
+                    },
+                    error: function (msg) {
+                        alert(msg);
+                    }
+                });
+            }
+        }
+
+        function CheckGamesDB() {
+            $.ajax({
+                    method: "post",
+                    dataType: "text",
+                    url: "@Url.Action("CheckGamesDB", "UserHome")",
+                    data: {
+                        
+                    },
+                    success: function (msg) {
+                        console.log(msg);
+                        loadTable(msg);
+                    },
+                    error: function (msg) {
+                        alert(msg);
+                    }
+                });
+        }
+
+        function loadTable(obj) {
+            $("#WaitRequest > tbody").html("");
+            $("#WaitAccept > tbody").html("");
+            $("#Start > tbody").html("");
+            var result = jQuery.parseJSON(obj); 
+            $(result).each(function (i, value) {
+                //send
+                if (value.RequestUser ==@id&& value.Status == 'Wait') {
+                    var row = "<tr><td>" + value.RequestUser + "</td>"
+                        + "<td>" + value.AcceptUser + "</td>"
+                        + "<td>" + value.Status + "</td></tr>"
+                    $("#WaitRequest > tbody").append(row);
+                }
+                //recive
+                if (value.AcceptUser ==@id&& value.Status == 'Wait') {
+                    var row = "<tr><td>" + value.RequestUser + "</td>"
+                        + "<td>" + value.AcceptUser + "</td>"
+                        + "<td>" + value.Status + "</td>"
+                        + "<td onclick=\"AcceptRequest('" + value.Id +"')\">Qebul et</td>"
+                        + "<td onclick=\"RejectRequest('" + value.Id +"')\">levg et</td></tr >"
+                    $("#WaitAccept > tbody").append(row);
+                }
+                //accept
+                if (value.Status == 'Start') {
+                    var row = "<tr><td>" + value.RequestUser + "</td>"
+                        + "<td>" + value.AcceptUser + "</td>"
+                        + "<td>" + value.Status + "</td></tr>"
+                    $("#Start > tbody").append(row);
+                }
+
+                
+            });
+        }
+        
+        function AcceptRequest(id) {
+            var a = confirm("oyun devetni qebul etmeye eminsinizmi?");
+            console.log(id+"qebul");
+        }
+        function RejectRequest(id) {
+            var a = confirm("oyun devetini levg etmeye eminsinizmi?");
+            if (a) {
+                $.ajax({
+                    method: "post",
+                    dataType: "text",
+                    url: "@Url.Action("RejectAccept", "UserHome")",
+                    data: {
+                        id: id
+                    },
+                    success: function (msg) {
+                        alert(msg);
+                    },
+                    error: function (msg) {
+                        alert(msg);
+                    }
+                });
+            }
+        }
+
+    </script>
+}

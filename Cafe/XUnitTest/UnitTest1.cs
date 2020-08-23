@@ -5,6 +5,7 @@ using Xunit;
 using System.Data.SqlClient;
 using BLCafe;
 using Xunit.Abstractions;
+using System.Threading.Tasks;
 
 namespace XUnitTest
 {
@@ -65,9 +66,9 @@ namespace XUnitTest
 
 
         [Fact]
-        public void Test5()
+        public async Task Test5()
         {
-            var list = category.GetById(30);
+            var list = await category.GetByIdAsync(30);
 
             foreach (var item in list)
             {
@@ -76,9 +77,9 @@ namespace XUnitTest
         }
 
         [Fact]
-        public void Test6()
+        public async Task Test6()
         {
-            var list = category.GetById(30);
+            var list = await category.GetByIdAsync(30);
 
             foreach (var item in list)
             {
@@ -87,9 +88,9 @@ namespace XUnitTest
         }
 
         [Fact]
-        public void Test7()
+        public async Task  Test7()
         {
-            var list = category.GetById(30);
+            var list = await category.GetByIdAsync(30);
 
             foreach (var item in list)
             {

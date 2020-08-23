@@ -13,25 +13,20 @@ namespace BLCafe.ConcreateRepository
                    "p.Description, p.ImgPath , s.Name as SubCategoryName " +
                    "FROM Product p LEFT JOIN SubCategory s ON p.SubCategoryId = s.Id";
 
-       
 
-        public List<UIProduct> GetUIProducts(int id=0)
+
+        public List<UIProduct> GetUIProducts(int id = 0)
         {
-            
-            using (CreateSqlConnection sqlConnection = new CreateSqlConnection())
-            {
-                if(id>0) return sqlConnection.ExecuteReader<UIProduct>(query+" WHERE p.Id="+id);
-                return sqlConnection.ExecuteReader<UIProduct>(query);               
-            }
+            if (id > 0) return ExecuteReader<UIProduct>(query + " WHERE p.Id=" + id);
+            return ExecuteReader<UIProduct>(query);
         }
 
-        public async Task<List<UIProduct>> GetUIProductAsync(int id=0)
+        public async Task<List<UIProduct>> GetUIProductAsync(int id = 0)
         {
-            using (CreateSqlConnection sqlConnection = new CreateSqlConnection())
-            {
-                if (id > 0) return await sqlConnection.ExecuteReaderAsync<UIProduct>(query + " WHERE p.Id="+id);
-                return await sqlConnection.ExecuteReaderAsync<UIProduct>(query);
-            }
+
+            if (id > 0) return await ExecuteReaderAsync<UIProduct>(query + " WHERE p.Id=" + id);
+            return await ExecuteReaderAsync<UIProduct>(query);
+
         }
     }
 }

@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 
 namespace Cafe.Controllers.Admin
 {
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class CategoryController : Controller
     {
         CategoryRepository repository = new CategoryRepository();

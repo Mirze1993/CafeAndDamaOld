@@ -1,4 +1,5 @@
-﻿using Model.Interface;
+﻿using BLCafe.ConcreateRepository;
+using Model.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BLCafe.Interface
 {
-    interface ICRUD<T> where T : IEntity, new()
+    public interface ICRUD<T>:IExecuteCommand  where T : class, IEntity, new()
     {
         List<T>  GetById(int id);
         int Insert(T t);
