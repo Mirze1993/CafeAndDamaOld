@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BLCafe.ConcreateRepository;
 using BLCafe.Interface;
 using Cafe.Tools;
 using Cafe.Tools.Config;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Model.Entities;
+using Model.UIEntites;
+using Model.UIGame;
 using Newtonsoft.Json;
 
 namespace Cafe.Controllers.LoginUser
@@ -57,13 +60,34 @@ namespace Cafe.Controllers.LoginUser
             int id = 0;
             if (userid != null) id = Convert.ToInt32(userid);
             if (id <= 0) return "error";
-            var games=repository.ExecuteReader<Games>($"select * from Games g where g.RequestUser={id} or g.AcceptUser={id}");
+            var games=repository.ExecuteReader<UIGames>
+                ($"select g.*, " +
+                $"u.UserName as AcceptUserName, " +
+                $"u1.UserName as RequestUserName " +
+                $"from Games g " +
+                $"LEFT JOIN AppUser u on u.Id = g.AcceptUser " +
+                $"LEFT JOIN AppUser u1 on u1.Id = g.RequestUser " +
+                $"where g.RequestUser = {id} or g.AcceptUser = {id}");
             return JsonConvert.SerializeObject(games);
         }
 
-        public string RejectAccept(int id)
+        [HttpPost]
+        public string RejectRequest(int id)
         {
             return repository.Delet(id) ? "succes" : "unsuccess";
+        }
+
+        [HttpPost]
+        public string AcceptRequest(int id,string reqU,string accU)
+        {
+            var games= repository.GetById(id);
+            if (games.Count<1) return "game not found";
+            var game = games.FirstOrDefault();
+            game.Status = GameStatus.Start;
+            var b=repository.Update(game,id);
+            if (!b) return "unsucces";
+            var a= new PlayGameRepository().Insert(new SrzJson().srz(new UIPlayGame(reqU, accU, id)));
+            return a>0?"success": "unsuccess";
         }
     }
 }

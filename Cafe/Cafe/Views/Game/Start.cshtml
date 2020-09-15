@@ -1,0 +1,231 @@
+﻿
+<!DOCTYPE html>
+@{
+    int gameId = ViewBag.GameId;
+    var userName = User.Identity.Name;
+}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="~/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/customer/css/boardCustomer.css" rel="stylesheet" />
+    <script src="~/jquery/jquery.min.js"></script>
+    <script src="~/twitter-bootstrap/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+    <div class="gameBoard">
+
+    </div>
+
+    <script>
+
+        $(document).ready(function () {
+        //prepare stone function
+        (function ($) {
+            $.fn.Das = function (x, y,classname ) {
+                var $e = $("<div>", {id: x + "" + y, class: classname,
+                    style: "left:" + (x * 12.5) + "%; top:" + (y * 12.5) + "%"
+                });
+                this.append($e);
+            }
+        })(jQuery);
+
+        //start game and prepare stone
+
+        $.ajax({
+                type: "POST",
+                url : "@Url.Action("StartGame","Game")",
+                data: {
+                   id:@gameId,
+                },
+                dataType: "text",
+                success: function (msg) {
+                    var pg = jQuery.parseJSON(msg);
+                    var bc = jQuery.parseJSON(pg.WhiteCoordinate);
+                    var wc = jQuery.parseJSON(pg.BlackCoordinate);
+                    queue = pg.Queue;
+                    wightStoneUser = pg.Gamer1;
+
+                    $(bc).each(function (i, value) {
+                        var x = value.X;
+                        var y = value.Y;
+                        $(".gameBoard").Das(x, y, 'wightStone');
+                    });
+                    $(wc).each(function (i, value) {
+                        var x = value.X;
+                        var y = value.Y;
+                        $(".gameBoard").Das(x, y,'blackStone');
+                    });
+
+                    $(".wightStone").click(function () {
+                        StoneClick($(this).attr("id"));
+                    });
+                    $(".blackStone").click(function () {
+                        StoneClick($(this).attr("id"));
+                    });
+                },
+                error: function (msg) {
+                    console.log(msg);
+                }
+            }
+            );
+
+            var timer = setInterval(CkeckGame, 2000);
+        });
+
+        function CkeckGame() {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("CkeckGame")",
+                    data: { gameId: @gameId },
+                    dataType: "text",
+                    success: function (msg) {
+                        var obj = jQuery.parseJSON(msg);
+                        queue = obj.Queue;
+                        var objMove = jQuery.parseJSON(obj.Move)
+                        var x1 = (objMove.OldX + objMove.NewX) / 2;
+                        var y1 = (objMove.OldY + objMove.NewY) / 2;
+                        var deletedStone = x1 + "" + y1;
+                        $(document.getElementById(deletedStone)).remove();
+                        
+                        var stoneId = objMove.OldX + "" + objMove.OldY;
+                        $(document.getElementById(stoneId)).animate({ left: objMove.NewX * 12.5 + "%", top: objMove.NewY * 12.5 + "%" });
+                        $(document.getElementById(stoneId)).attr("id", objMove.NewX + "" + objMove.NewY);
+
+                        console.log(deletedStone);
+                        console.log(stoneId);
+
+                        },
+                        error: function (msg) {
+                            console.log(msg);
+                        }
+                    }
+                );
+    }
+
+        //stone click function
+        var queue = "";
+        var wightStoneUser = "";
+        var username="@userName";
+        function StoneClick(id) {
+
+            if (queue === username) {
+                var selectedStone = document.getElementById(id);
+                if (wightStoneUser === username && $(selectedStone).hasClass("wightStone")) {
+
+                    PossiblePlace(id);
+                } else if (wightStoneUser !== username&& $(selectedStone).hasClass("blackStone")) {
+                    PossiblePlace(id);
+                    }
+
+                }
+        }
+
+        var oldX;
+        var oldY;
+        function PossiblePlace(e) {
+            oldX = e.charAt(0);
+            oldY = e.charAt(1);
+            $(".DumPossiblePlace").remove();
+            $(".PossiblePlace").remove();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("PossiblePlace","Game")",
+                data: {
+                    x: oldX,
+                    y: oldY,
+                    gameId:@gameId,
+                },
+                dataType: "text",
+                success: function (msg) {
+                    console.log(msg);
+                    var obj = jQuery.parseJSON(msg);
+                    if (obj != null) {
+                        $(obj).each(function (i, value) {
+                            var a = Math.abs(oldX - value.X);
+                            var $e = $("<div>", {
+                                id: value.X + "/" + value.Y,
+                                style: "left:" + (value.X * 12.5) + "%; top:" + (value.Y * 12.5) + "%",
+                                onclick: "Move('" + value.X + "/" + value.Y + "'," + a + ")"
+                            });
+                            if (a == 2) {
+                                $e.addClass("DumPossiblePlace");
+                            } else {
+                                $e.addClass("PossiblePlace");
+                            }
+                            $(".gameBoard").append($e);
+                        });
+                    }
+                },
+                error: function (msg) {  }
+            });
+        }
+
+        function Move(e, a) {
+            x = e.charAt(0);
+            y = e.charAt(2);
+            if (a == 2) {
+                $(".DumPossiblePlace").remove();
+                DumMove(x, y);
+            } else {
+                $(".PossiblePlace").remove();
+                SimpleMove(x, y);
+            }
+        }
+
+        function SimpleMove(x,y) {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Move")",
+            data: {
+                gameId: @gameId, oldX: oldX, oldY: oldY, newX: x, newY: y
+            },
+            dataType: "text",
+            success: function (msg) {
+                var obj = jQuery.parseJSON(msg);
+                if (obj != null) {
+                    var DasId = obj.OldX + "" + obj.OldY;
+                    $(document.getElementById(DasId)).animate({ left: obj.NewX * 12.5 + "%", top: obj.NewY * 12.5 + "%" });
+                    $(document.getElementById(DasId)).attr("id", obj.NewX + "" + obj.NewY);
+                    queue = "";
+                }
+            },
+            error: function (msg) { console.log(msg);  }
+            });
+        }
+
+        function DumMove(x, y) {
+            $.ajax({
+            type: "POST",
+            url: "@Url.Action("DumMove")",
+            data: {
+               gameId: @gameId, oldX: oldX, oldY: oldY, newX: x, newY: y
+            },
+            dataType: "text",
+            success: function (msg) {
+                var obj = jQuery.parseJSON(msg);
+                if (obj != null) {
+                    var DasId = obj.OldX + "" + obj.OldY;
+                    var x1 = (parseInt(obj.OldX) + parseInt(x)) / 2;
+                    var y1 = (parseInt(obj.OldY) + parseInt(y)) / 2;
+                    var vurulandas = x1 + "" + y1;
+                    console.log(vurulandas);
+                    $(document.getElementById(vurulandas)).remove();
+                    $(document.getElementById(DasId)).animate({ left: obj.NewX * 12.5 + "%", top: obj.NewY * 12.5 + "%" });
+                    $(document.getElementById(DasId)).attr("id", obj.NewX + "" + obj.NewY);
+                    queue = "";
+                }
+            },
+            error: function (msg) { console.log(msg);  }
+         });
+        }
+
+
+    </script>
+
+
+</body>
+</html>
+

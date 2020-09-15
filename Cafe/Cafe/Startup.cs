@@ -21,6 +21,7 @@ namespace Cafe
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IGamesRepository, GamesRepository>();
+            services.AddTransient<IPlayGameRepository, PlayGameRepository>();
             //services.AddScoped<CookieEvents>();
 
             services.AddAuthentication(option =>

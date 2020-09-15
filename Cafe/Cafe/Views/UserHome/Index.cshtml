@@ -95,6 +95,9 @@
                                 <th class="th-sm">
                                     Status
                                 </th>
+                                <th class="th-sm">
+                                    Start
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -107,8 +110,7 @@
 
 
         </div>
-
-
+        
         <!-- Sidebar Widgets Column -->
         <div class="col-md-4">
 
@@ -196,7 +198,7 @@
                     @User.Identity.Name xos gelmisiniz.Profil melumatlarinizi gormek ve ve ya yenilemek ucun <a href="#">profil</a> melumatlarina kecid edin
                 </div>
             </div>
-
+            
         </div>
 
     </div>
@@ -210,7 +212,7 @@
     <script>
         $(document).ready(function () {
             $('#OnlineUser').DataTable();
-            var timer = setInterval(CheckGamesDB, 1000);
+            var timer = setInterval(CheckGamesDB, 10000);
         });
 
         function RequestGame(name) {
@@ -250,7 +252,7 @@
                     }
                 });
         }
-
+        
         function loadTable(obj) {
             $("#WaitRequest > tbody").html("");
             $("#WaitAccept > tbody").html("");
@@ -259,25 +261,28 @@
             $(result).each(function (i, value) {
                 //send
                 if (value.RequestUser ==@id&& value.Status == 'Wait') {
-                    var row = "<tr><td>" + value.RequestUser + "</td>"
-                        + "<td>" + value.AcceptUser + "</td>"
+                    var row = "<tr><td>" + value.RequestUserName + "</td>"
+                        + "<td>" + value.AcceptUserName + "</td>"
                         + "<td>" + value.Status + "</td></tr>"
                     $("#WaitRequest > tbody").append(row);
                 }
                 //recive
                 if (value.AcceptUser ==@id&& value.Status == 'Wait') {
-                    var row = "<tr><td>" + value.RequestUser + "</td>"
-                        + "<td>" + value.AcceptUser + "</td>"
-                        + "<td>" + value.Status + "</td>"
-                        + "<td onclick=\"AcceptRequest('" + value.Id +"')\">Qebul et</td>"
-                        + "<td onclick=\"RejectRequest('" + value.Id +"')\">levg et</td></tr >"
+                    var row = '<tr><td>' + value.RequestUserName + '</td>'
+                        + '<td>' + value.AcceptUserName + '</td>'
+                        + '<td>' + value.Status + '</td>'
+                        + '<td onclick="AcceptRequest(\'' + value.Id + '\',\'' + value.RequestUserName + '\',\'' + value.AcceptUserName+'\')">Qebul et</td>'
+                        + '<td onclick="RejectRequest(\'' + value.Id +'\')">levg et</td></tr >'
                     $("#WaitAccept > tbody").append(row);
                 }
                 //accept
                 if (value.Status == 'Start') {
-                    var row = "<tr><td>" + value.RequestUser + "</td>"
-                        + "<td>" + value.AcceptUser + "</td>"
-                        + "<td>" + value.Status + "</td></tr>"
+                    var row = '<tr><td>' + value.RequestUserName + '</td>'
+                        + '<td>' + value.AcceptUserName + '</td>'
+                        + '<td>' + value.Status + '</td>'
+                        + '<td><a class="btn btn-success" href="/Game/Start/'+value.Id +'">Start </a></td></tr >';
+
+                   
                     $("#Start > tbody").append(row);
                 }
 
@@ -285,17 +290,36 @@
             });
         }
         
-        function AcceptRequest(id) {
+
+        function AcceptRequest(id,reqU,accU) {
             var a = confirm("oyun devetni qebul etmeye eminsinizmi?");
-            console.log(id+"qebul");
+             if (a) {
+                $.ajax({
+                    method: "post",
+                    dataType: "text",
+                    url: "@Url.Action("AcceptRequest", "UserHome")",
+                    data: {
+                        id: id,
+                        reqU: reqU,
+                        accU: accU
+                    },
+                    success: function (msg) {
+                        alert(msg);
+                    },
+                    error: function (msg) {
+                        alert(msg);
+                    }
+                });
+             }
         }
+        
         function RejectRequest(id) {
             var a = confirm("oyun devetini levg etmeye eminsinizmi?");
             if (a) {
                 $.ajax({
                     method: "post",
                     dataType: "text",
-                    url: "@Url.Action("RejectAccept", "UserHome")",
+                    url: "@Url.Action("RejectRequest", "UserHome")",
                     data: {
                         id: id
                     },
