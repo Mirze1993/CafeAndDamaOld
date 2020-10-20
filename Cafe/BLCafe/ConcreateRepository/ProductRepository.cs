@@ -17,16 +17,9 @@ namespace BLCafe.ConcreateRepository
 
         public List<UIProduct> GetUIProducts(int id = 0)
         {
-            if (id > 0) return ExecuteReader<UIProduct>(query + " WHERE p.Id=" + id);
-            return ExecuteReader<UIProduct>(query);
+            if (id > 0) return Reader<UIProduct>(query + " WHERE p.Id=" + id);
+            return Reader<UIProduct>(query);
         }
-
-        public async Task<List<UIProduct>> GetUIProductAsync(int id = 0)
-        {
-
-            if (id > 0) return await ExecuteReaderAsync<UIProduct>(query + " WHERE p.Id=" + id);
-            return await ExecuteReaderAsync<UIProduct>(query);
-
-        }
+        
     }
 }

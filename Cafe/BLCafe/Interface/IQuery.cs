@@ -6,15 +6,42 @@ namespace BLCafe.Interface
 {
     interface IQuery<T>
     {
-       bool Insert(out string query);
-       bool Update(string id,out string query);
-       bool GetAll(out string query, params string[] column);
-       bool GetById(out string query);
-       bool Delete(string id, out string query);
-       bool RowCount(out string query);
-       bool RowCountWithSrc(string srcClm, string srcValue, out string query);
-       bool getFromTo(int from, int to,out string query);
-       bool getFromToWithSrc(int from, int to, string srcClm, string srcValue, out string query);
-      
+        string Delete(string id);
+        string GetAll(params string[] column);
+        /// <summary>
+        /// sqlParametr @Id
+        /// </summary>
+        /// <returns></returns>
+        string GetById();
+        string getFromTo(int from, int to);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="srcClm"> sqlParametr @srcClm</param>
+        /// <returns></returns>
+        string getFromToWithSrc(int from, int to, string srcClm);
+        /// <summary>
+        /// columnNames are SqlParametr
+        /// </summary>
+        /// <returns></returns>
+        string Insert();
+        string RowCount();
+        /// <summary>
+        /// @srcClm is SlqParametr
+        /// </summary>
+        /// <param name="srcClm">@srcClm is SlqParametr </param>
+        /// <returns></returns>
+        string RowCountWithSrc(string srcClm);
+        /// <summary>
+        /// @colms are sqlParametr
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="colms">@colms are sqlParametr</param>
+        /// <returns></returns>
+        string Update(string id, params string[] colms);
+
+        
     }
 }

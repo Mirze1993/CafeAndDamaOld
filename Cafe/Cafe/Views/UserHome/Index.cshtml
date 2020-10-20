@@ -6,7 +6,7 @@
     var userid = User.Claims.FirstOrDefault(x => x.Type ==System.Security.Claims.ClaimTypes.NameIdentifier).Value;
     int id = 0;
     if (userid != null) { id = Convert.ToInt32(userid); };
-}
+} 
 <!--UserHome-->
 <div class="container">
 

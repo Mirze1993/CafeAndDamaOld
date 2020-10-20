@@ -42,9 +42,9 @@ namespace Cafe.Controllers.LoginUser
             if (obj != null) acceptUserId=Convert.ToInt32(obj);
             if (userid != null) requestUserId = Convert.ToInt32(userid);
             if (acceptUserId <=0||requestUserId<=0) return "user not found";
-            var checkagain = repository.ExecuteReader<Games>($"select * from Games g where (g.RequestUser={requestUserId} and g.AcceptUser={acceptUserId}) or (g.RequestUser={acceptUserId} and g.AcceptUser={requestUserId})");
+            var checkagain = repository.ExecuteReader<Games>($"select * from Games g where (g.RequestUser={requestUserId} and g.AcceptUser={acceptUserId} and g.Status <> 'Close') or (g.RequestUser={acceptUserId} and g.AcceptUser={requestUserId}) and g.Status <> 'Close'");
             if (checkagain.Count > 0) return "game exsist";
-            int gameId=repository.Insert(new Games() {
+            int gameId = repository.Insert(new Games() {
                 AcceptUser = acceptUserId,
                 RequestUser = requestUserId,
                 Status = GameStatus.Wait

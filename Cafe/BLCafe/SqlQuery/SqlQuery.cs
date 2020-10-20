@@ -5,128 +5,133 @@ using System.Text;
 
 namespace BLCafe.SqlQuery
 {
-    public class SqlQuery<T>:IQuery<T>
+    public class SqlQuery<T> : IQuery<T>
     {
         Type GetTypeT => typeof(T);
 
-        public bool Delete(string id, out string query)
+        public string Delete(string id)
         {
-            query = $"DELETE FROM {GetTypeT.Name} WHERE Id ={id} ";
-            return true;
+            return $"DELETE FROM {GetTypeT.Name} WHERE Id ={id} ";
         }
 
-        public bool GetAll(out string query, params string[] column)
+        public string GetAll(params string[] column)
         {
-            query = "";
-            try
+            string query = "";
+            if (column.Length > 0)
             {
-                if (column.Length>0)
+                string clm = "";
+                foreach (var item in column)
                 {
-                    string clm = "";
-                    foreach (var item in column)
-                    {
-                        clm += item + ",";
-                    }
-                    clm = clm.Remove(clm.Length - 1);
-                    query = $"SELECT {clm}  FROM {GetTypeT.Name}";
-                    return true;
+                    clm += item + ",";
                 }
-                else query = $"SELECT *  FROM {GetTypeT.Name}";
-                return true;
+                clm = clm.Remove(clm.Length - 1);
+                query = $"SELECT {clm}  FROM {GetTypeT.Name}";
             }
-            catch (Exception e)
-            {
-                Log.AddLog(e.Message);
-                return false;
-            }
-           
+            else query = $"SELECT *  FROM {GetTypeT.Name}";
+            return query;
+        }
+        /// <summary>
+        /// sqlParametr @Id
+        /// </summary>
+        /// <returns></returns>
+        public string GetById()
+        {
+            return $"SELECT * FROM {GetTypeT.Name} WHERE Id =@Id ";
         }
 
-        public bool GetById(out string query)
+        public string getFromTo(int from, int to)
         {
-            query = $"SELECT * FROM {GetTypeT.Name} WHERE Id =@Id ";
-            return true;
+            return "select * from " +
+                   "  (select Row_Number() over" +
+                   $"  (order by Id) as RowIndex, * from {GetTypeT.Name}) as Sub" +
+                   $"  Where Sub.RowIndex >= {from} and Sub.RowIndex <= {to}";
+
         }
 
-        public bool GetByIdJoin<T1>(out string query)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="srcClm"> sqlParametr @srcClm</param>
+        /// <returns></returns>
+        public string getFromToWithSrc(int from, int to, string srcClm)
         {
-            var nameJoin = typeof(T1).Name;
-            query = $"SELECT * FROM {GetTypeT.Name} WHERE Id =@Id left join {nameJoin}.Id={GetTypeT.Name}.Id";
-            return true;
-        }
-
-        public bool getFromTo(int from, int to, out string query)
-        {
-             query = "select * from " +
-                    "  (select Row_Number() over" +
-                    $"  (order by Id) as RowIndex, * from {GetTypeT.Name}) as Sub" +
-                    $"  Where Sub.RowIndex >= {from} and Sub.RowIndex <= {to}";
-            return true;
-        }
-
-        public bool getFromToWithSrc(int from, int to, string srcClm,string srcValue,out string query)
-        {
-            query = "select * from " +
+            return "select * from " +
                    "  (select Row_Number() over" +
                    $" (order by Id) as RowIndex, * from {GetTypeT.Name} " +
-                   $" Where {srcClm} like '{srcValue}%') as Sub" +
+                   $" Where {srcClm} like '@{srcClm}%') as Sub" +
                    $" Where Sub.RowIndex >= {from} and Sub.RowIndex <= {to}";
-            return true;
+
         }
 
-        public bool Insert(out string query)
+        /// <summary>
+        /// columnNames are SqlParametr
+        /// </summary>
+        /// <returns></returns>
+        public string Insert()
         {
             string columns = "";
             string values = "";
-            query = "";
             foreach (var item in GetTypeT.GetProperties())
             {
                 if (item.Name == "Id") continue;
                 columns += $"{item.Name} ,";
                 values += $"@{item.Name} ,";
             }
-            //last , remove
+            //last "," remove
             if (!String.IsNullOrEmpty(columns) && !String.IsNullOrEmpty(values))
             {
                 columns = columns.Remove(columns.Length - 1);
                 values = values.Remove(values.Length - 1);
-                if (columns.Split(",").Length != values.Split(",").Length) return false;
-                query = $"INSERT INTO {GetTypeT.Name} ({columns}) VALUES({values})";
-                return true;
+                if (columns.Split(",").Length != values.Split(",").Length) return "";
+                return $"INSERT INTO {GetTypeT.Name} ({columns}) VALUES({values})";
             }
-            return false;
+            return "";
         }
 
-        public bool RowCount(out string query)
+        public string RowCount()
         {
-            query = $"Select count (*) from {GetTypeT.Name}";
-            return true;
+            return $"Select count (*) from {GetTypeT.Name}";
         }
-
-        public bool RowCountWithSrc(string srcClm, string srcValue, out string query)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="srcClm">@srcClm is SlqParametr </param>
+        /// <returns></returns>
+        public string RowCountWithSrc(string srcClm)
         {
-            query = $"Select count (*) from {GetTypeT.Name} u Where u.{srcClm} like '{srcValue}%'";
-            return true;
-        }
+            return $"Select count (*) from {GetTypeT.Name} u " +
+                $"Where u.{srcClm} like '@{srcClm}%'";
 
-        public bool Update(string id,out string query)
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="colms">@colms are sqlParametr</param>
+        /// <returns></returns>
+        public string Update(string id, params string[] colms)
         {
             string columns = "";
-            query = "";
-            foreach (var item in GetTypeT.GetProperties())
-            {
-                if (item.Name == "Id") continue;
-                columns += $"{item.Name}=@{item.Name} ,";
-            }
+            if (colms.Length > 0)
+                foreach (var item in colms)
+                {
+                    if (item == "Id") continue;
+                    columns += $"{item}=@{item} ,";
+                }
+            else
+                foreach (var item in GetTypeT.GetProperties())
+                {
+                    if (item.Name == "Id") continue;
+                    columns += $"{item.Name}=@{item.Name} ,";
+                }
             if (!String.IsNullOrEmpty(columns))
             {
                 columns = columns.Remove(columns.Length - 1);
-                query = $"UPDATE  {GetTypeT.Name} set {columns} Where Id={id}";
-                return true;
+                return $"UPDATE  {GetTypeT.Name} set {columns} Where Id={id}";
             }
-            return false;
+            return "";
         }
-
-        
     }
 }

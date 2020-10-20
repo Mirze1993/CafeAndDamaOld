@@ -18,7 +18,7 @@ namespace BLCafe.ConcreateRepository
         public bool IsUserRole(int userId, int roleId)
         {
             string q = $"select * from UserRole u Where u.AppUserId={userId} and u.RoleId={roleId}";
-            var ur = ExecuteReader<UserRole>(q);
+            var ur = Reader<UserRole>(q);
             if (ur.Count > 0) return true;
             else return false;
 
@@ -27,14 +27,14 @@ namespace BLCafe.ConcreateRepository
         public bool DeleteRole(int userId, int roleId)
         {
             string q = $"DELETE FROM UserRole WHERE AppUserId={userId} and RoleId={roleId}";
-            var ur = ExecuteQueryy(q, null);
+            var ur = NonQuery(q, null);
             return ur;
 
         }
         public bool AddRole(int userId, int roleId)
         {
             string q = $"INSERT INTO UserRole (AppUserId , RoleId) VALUES({userId} , {roleId} )";
-            var ur = ExecuteQueryy(q, null);
+            var ur = NonQuery(q, null);
             return ur;
         }
     }

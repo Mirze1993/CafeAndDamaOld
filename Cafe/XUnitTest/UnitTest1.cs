@@ -23,9 +23,10 @@ namespace XUnitTest
         [Fact]
         public  void Test1()
         {
-            var list = product.GetAll();
+            var g = new Class1("select * from Games").ExecuteReadCommand<Games>();
+            
 
-            foreach (var item in list)
+            foreach (var item in g)
             {
                 output.WriteLine(item.Name.ToString());
             }

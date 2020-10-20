@@ -20,9 +20,9 @@ namespace Cafe.Controllers.Admin
         }
 
         ProductRepository repository = new ProductRepository();
-        public async Task<IActionResult> AllProduct()
+        public IActionResult AllProduct()
         {
-            return View(await repository.GetUIProductAsync());
+            return View(repository.GetUIProducts());
         }
 
         public IActionResult AddProduct()
@@ -31,9 +31,9 @@ namespace Cafe.Controllers.Admin
             return View();
         }
 
-        public async Task<IActionResult> UpdateProduct(int id)
+        public IActionResult UpdateProduct(int id)
         {
-            var pr = await repository.GetUIProductAsync(id);
+            var pr =  repository.GetUIProducts(id);
             var p = pr.FirstOrDefault();
             if (p == null) return RedirectToAction("AllProduct");
 

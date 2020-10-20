@@ -15,17 +15,9 @@ namespace BLCafe.ConcreateRepository
         public List<UISubCategory> GetUISubCategories(int id=0)
         {
             
-                if (id > 0) return ExecuteReader<UISubCategory>(query + " WHERE s.Id="+id);
-                return ExecuteReader<UISubCategory>(query);
+                if (id > 0) return Reader<UISubCategory>(query + " WHERE s.Id="+id);
+                return Reader<UISubCategory>(query);
                
-            
-        }
-
-        public async Task<List<UISubCategory>> GetUISubCategoriesAsync(int id=0)
-        {
-           
-                if (id > 0) return await ExecuteReaderAsync<UISubCategory>(query + " WHERE s.Id="+id);
-                return await ExecuteReaderAsync<UISubCategory>(query);
             
         }
     }

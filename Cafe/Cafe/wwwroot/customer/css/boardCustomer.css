@@ -4,13 +4,55 @@ body {
     width: 100%;
     height: 100%;    
 }
+.mainDiv {
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    background-image: url('../../img/wood1.jpg');
+}
+
+.boardHeader {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 9vh;
+    background-color: darkgoldenrod;
+}
+
+.boardFooter {
+    display: block;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    height: 9vh;
+}
+
+.btn {
+    
+    background-color: transparent;
+    border: none;
+    width: 18vw;
+    height: 7vh;
+    color: white;
+    padding: 1px 1px;
+    font-size: 4vmin;
+    cursor: pointer;
+}
+
+    /* Darker background on mouse-over */
+  .btn:hover {
+        background-color: RoyalBlue;
+    }
+
+
 
 .gameBoard {
     display: block;
     position: absolute;
     left: 0;
     right: 0;
-    top: 10px;
+    bottom: 10vmin;
+    top: 10vmin;
     margin: auto;
     width: 80vmin;
     height: 80vmin;
@@ -20,9 +62,8 @@ body {
     padding: 0;
 }
 
-.wightStone {
+.stone {
     position: absolute;
-    background-image: url('../../img/wightstone.png');
     background-position: center;
     background-size: 100%;
     width: 12.5%;
@@ -30,20 +71,26 @@ body {
     margin: 0;
 }
 
-.blackStone {
-    position: absolute;
-    background-image: url('../../img/blackstone.png');
-    background-position: center;
-    background-size: 100%;
-    width: 12.5%;
-    height: 12.5%;
-    margin: 0;
+.whiteSimpleStone {    
+    background-image: url('../../img/wightstone.png');    
+}
+
+.blackSimpleStone {    
+    background-image: url('../../img/blackstone.png');    
+}
+
+.whiteQuenStone {
+    background-image: url('../../img/wightstone+.png');
+}
+
+.blackQuenStone {
+    background-image: url('../../img/blackstone+.png');
 }
 
 .PossiblePlace {
     position: absolute;
     background-size: 100%;
-    background-color: red;
+    background-image: radial-gradient( yellow, green);
     width: 12.5%;
     height: 12.5%;
     margin: 0;
@@ -56,4 +103,12 @@ body {
     width: 12.5%;
     height: 12.5%;
     margin: 0;
+}
+
+.DumElement{
+    background-color:lawngreen;
+}
+
+.boardRotate{
+    transform:rotate(180deg);
 }
