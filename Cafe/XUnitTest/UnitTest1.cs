@@ -23,13 +23,7 @@ namespace XUnitTest
         [Fact]
         public  void Test1()
         {
-            var g = new Class1("select * from Games").ExecuteReadCommand<Games>();
             
-
-            foreach (var item in g)
-            {
-                output.WriteLine(item.Name.ToString());
-            }
         }
 
         [Fact]
@@ -66,38 +60,7 @@ namespace XUnitTest
         }
 
 
-        [Fact]
-        public async Task Test5()
-        {
-            var list = await category.GetByIdAsync(30);
-
-            foreach (var item in list)
-            {
-                output.WriteLine(item.Name.ToString());
-            }
-        }
-
-        [Fact]
-        public async Task Test6()
-        {
-            var list = await category.GetByIdAsync(30);
-
-            foreach (var item in list)
-            {
-                output.WriteLine(item.Name.ToString());
-            }
-        }
-
-        [Fact]
-        public async Task  Test7()
-        {
-            var list = await category.GetByIdAsync(30);
-
-            foreach (var item in list)
-            {
-                output.WriteLine(item.Name.ToString());
-            }
-        }
+       
 
     }
 }

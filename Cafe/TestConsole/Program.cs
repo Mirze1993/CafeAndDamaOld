@@ -42,11 +42,8 @@ namespace TestConsole
             //Console.WriteLine(hashTest.Verify("mirze", a));
 
             //select(x => (x.Name == "mirze").ToString());
-           var g= new Class1("select * from Games").ExecuteReadCommand<Games>();
-            foreach (var item in g)
-            {
-                Console.WriteLine(item);
-            }
+           
+           
             Console.ReadLine();
         }
 

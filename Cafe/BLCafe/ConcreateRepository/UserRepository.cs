@@ -12,7 +12,7 @@ namespace BLCafe.ConcreateRepository
         public List<UserRole> getUserRoles(int id)
         {
             string q = $"select * from UserRole u Where u.AppUserId={id}";
-            var ur = ExecuteReader<UserRole>(q);
+            var ur = Reader<UserRole>(q);
             return ur;
         }
         public bool IsUserRole(int userId, int roleId)
