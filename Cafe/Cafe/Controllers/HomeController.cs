@@ -48,7 +48,7 @@ namespace Cafe.Controllers
         {
             if (ModelState.IsValid)
             {
-                var u= repository.ExecuteReader<AppUser>($"Select Id  from AppUser Where Username='{model.UserName}'");
+                var u= repository.Reader<AppUser>($"Select Id  from AppUser Where Username='{model.UserName}'");
                 if (u.Count > 0) {
                     ModelState.AddModelError("", $"{model.UserName} is alreay  use");
                     return View();

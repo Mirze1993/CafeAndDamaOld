@@ -13,9 +13,9 @@ namespace Cafe.Controllers.Admin
     {
         SubCategoryRepository repository = new SubCategoryRepository();
 
-        public async Task<IActionResult> AllSubCategory()
+        public  IActionResult AllSubCategory()
         {
-            return View(await repository.GetUISubCategoriesAsync());
+            return View( repository.GetUISubCategories());
         }
 
         public IActionResult Add()
@@ -24,9 +24,9 @@ namespace Cafe.Controllers.Admin
         }
 
         [HttpGet]
-        public async Task<IActionResult> Update(int id)
+        public IActionResult Update(int id)
         {
-            var s = (await repository.GetUISubCategoriesAsync(id)).FirstOrDefault();
+            var s = ( repository.GetUISubCategories(id)).FirstOrDefault();
             ViewBag.CategoryName = s.CategoryName;
             return View("AddOrUpdate", new SubCategory()
             {
@@ -35,34 +35,34 @@ namespace Cafe.Controllers.Admin
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddOrUpdate(SubCategory subCategory)
+        public IActionResult AddOrUpdate(SubCategory subCategory)
         {
             bool b;
-            if (subCategory.Id > 0) b = await repository.UpdateAsync(subCategory, subCategory.Id);
-            else b = await repository.InsertAsync(subCategory)>0;
+            if (subCategory.Id > 0) b =  repository.Update(subCategory, subCategory.Id);
+            else b =  repository.Insert(subCategory)>0;
             if (b)
                 return RedirectToAction("AllSubCategory");
             return View("AddOrUpdate");
         }
 
-        public async Task<bool> SaveCategory(int catId, int id)
+        public bool SaveCategory(int catId, int id)
         {
-            var sc = (await repository.GetByIdAsync(id)).FirstOrDefault();
+            var sc = ( repository.GetById(id)).FirstOrDefault();
             sc.CategoryId = catId;
-            return await repository.UpdateAsync(sc, sc.Id);
+            return  repository.Update(sc, sc.Id);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int Id)
+        public  IActionResult Delete(int Id)
         {
-            var b = await repository.DeletAsync(Id);
+            var b =  repository.Delet(Id);
             return RedirectToAction("AllSubCategory");
         }
 
 
-        public async Task<string> SubCatigoryForDropDown()
+        public string SubCatigoryForDropDown()
         {
-            var s =await repository.GetAllAsync("Id", "Name");
+            var s = repository.GetAll("Id", "Name");
             return JsonConvert.SerializeObject(s);
         }
         

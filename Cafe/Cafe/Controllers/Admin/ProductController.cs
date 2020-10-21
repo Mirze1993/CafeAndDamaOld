@@ -41,7 +41,7 @@ namespace Cafe.Controllers.Admin
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddProduct(UIProduct model)
+        public  IActionResult AddProduct(UIProduct model)
         {
 
             string filename = null;
@@ -57,7 +57,7 @@ namespace Cafe.Controllers.Admin
                     model.Img.CopyTo(fs);
                 }
             }
-             await repository.InsertAsync(new Product()
+              repository.Insert(new Product()
             {
                 Name = model.Name,
                 Description = model.Description,
@@ -68,7 +68,7 @@ namespace Cafe.Controllers.Admin
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateProduct(UIProduct model)
+        public  IActionResult UpdateProduct(UIProduct model)
         {
 
             string filename = model.ImgPath;
@@ -97,24 +97,24 @@ namespace Cafe.Controllers.Admin
             if (model.Id > 0)
             {
                 prd.Id = model.Id;
-                await repository.UpdateAsync(prd, prd.Id);
+                 repository.Update(prd, prd.Id);
             }
-            else await repository.InsertAsync(prd);
+            else  repository.Insert(prd);
 
             return RedirectToAction("AllProduct");
         }
 
-        public async Task<bool> SaveSubCategory(int catId, int id)
+        public bool SaveSubCategory(int catId, int id)
         {
-            var pr = (await repository.GetByIdAsync(id)).FirstOrDefault();
+            var pr = ( repository.GetById(id)).FirstOrDefault();
             pr.SubCategoryId = catId;
-            return await repository.UpdateAsync(pr, pr.Id);
+            return  repository.Update(pr, pr.Id);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Delete(int id, string path)
+        public ActionResult Delete(int id, string path)
         {
-            var b = await repository.DeletAsync(id);
+            var b =  repository.Delet(id);
             var filePath = Path.Combine(Environment.WebRootPath, "userimg", path ?? "notfound");
             bool t = System.IO.File.Exists(filePath);
             if (b && t) System.IO.File.Delete(filePath);

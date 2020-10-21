@@ -1,19 +1,15 @@
-﻿
-using MicroORM.Interface;
+﻿using MicroORM.Interface;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Data.OracleClient;
 
 namespace MicroORM
 {
-    public class SqlCommander : CommanderBase
+    class OracleCommander : CommanderBase
     {
-        //static readonly string CConnectionString = "Server=.\\SQLExpress;Database=Cafe;Trusted_Connection=True";
-
-            
-
         public override List<DbParameter> SetParametrs<T>(T t)
         {
             List<DbParameter> parametrs = new List<DbParameter>();
@@ -23,24 +19,20 @@ namespace MicroORM
                     if (item.Name == "Id") continue;
                     object value = item.GetValue(t);
                     if (value == null) value = DBNull.Value;
-                    parametrs.Add(new SqlParameter($"@{item.Name}", value));
+                    parametrs.Add(new OracleParameter($"@{item.Name}", value));
                 }
             return parametrs;
         }
 
         public override DbParameter SetParametr(string paramName, object value)
         {
-            return new SqlParameter(paramName, value);
+            return new OracleParameter(paramName, value);
         }
 
-
-
-        public SqlCommander()
+        public OracleCommander()
         {
             connectionString = ORMConfig.ConnectionString;
-            connection = new SqlConnection(connectionString);
+            connection = new OracleConnection(connectionString);
         }
-
-
     }
 }

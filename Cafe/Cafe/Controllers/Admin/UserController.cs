@@ -42,18 +42,18 @@ namespace Cafe.Controllers.Admin
             return result;
         }
 
-        public async Task<IActionResult> UpdateUser(int id)
+        public async IActionResult UpdateUser(int id)
         {
-            var u = (await repository.GetByIdAsync(id)).FirstOrDefault();
+            var u = ( repository.GetById(id)).FirstOrDefault();
             ViewBag.UserRole = repository.getUserRoles(id);
-            ViewBag.Roles = await new RoleRepository().GetAllAsync();
+            ViewBag.Roles =  new RoleRepository().GetAll();
             return View(u);
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateUser(AppUser user)
+        public IActionResult UpdateUser(AppUser user)
         {
-            await repository.UpdateAsync(user, user.Id);
+             repository.Update(user, user.Id);
             return RedirectToAction("AllUser");
         }
 

@@ -1,9 +1,8 @@
-﻿using BLCafe.Interface;
+﻿using MicroORM.Interface;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace BLCafe.SqlQuery
+
+namespace MicroORM.SqlQuery
 {
     public class SqlQuery<T> : IQuery<T>
     {
@@ -85,7 +84,8 @@ namespace BLCafe.SqlQuery
                 columns = columns.Remove(columns.Length - 1);
                 values = values.Remove(values.Length - 1);
                 if (columns.Split(",").Length != values.Split(",").Length) return "";
-                return $"INSERT INTO {GetTypeT.Name} ({columns}) VALUES({values})";
+                return $"INSERT INTO {GetTypeT.Name} ({columns}) VALUES({values}) " +
+                    $" ;SELECT CAST(scope_identity() AS int)";
             }
             return "";
         }

@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BLCafe\BLCafe.csproj" />
+    <ProjectReference Include="..\BLCafe\MicroORM.csproj" />
   </ItemGroup>
 
 </Project>

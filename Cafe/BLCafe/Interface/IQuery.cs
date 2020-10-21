@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BLCafe.Interface
+namespace MicroORM.Interface
 {
-    interface IQuery<T>
+    public interface IQuery<T>
     {
         string Delete(string id);
         string GetAll(params string[] column);

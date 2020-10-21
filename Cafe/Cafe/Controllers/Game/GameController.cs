@@ -27,7 +27,7 @@ namespace Cafe.Controllers.Game
         [HttpPost]
         public string StartGame(int id)
         {
-            var pg = repository.ExecuteReader<PlayGame>($"Select * from PlayGame p where p.GameId={id}");
+            var pg = repository.Reader<PlayGame>($"Select * from PlayGame p where p.GameId={id}");
             return JsonConvert.SerializeObject(pg.FirstOrDefault());
         }
 
@@ -63,7 +63,7 @@ namespace Cafe.Controllers.Game
         [HttpPost]
         public string Move(int gameID, int oldX, int oldY, int oldZ, int newX, int newY)
         {
-            var pg = repository.ExecuteReader<PlayGame>($"Select * from PlayGame p where p.GameId={gameID}").FirstOrDefault();
+            var pg = repository.Reader<PlayGame>($"Select * from PlayGame p where p.GameId={gameID}").FirstOrDefault();
             var uiGame = new SrzJson().desrz(pg);
             var moveItem = new MoveItem(
                 uiGame, 

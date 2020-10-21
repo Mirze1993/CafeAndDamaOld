@@ -12,9 +12,9 @@ namespace Cafe.Controllers.Admin
     {
         RoleRepository repository = new RoleRepository();
 
-        public async Task<IActionResult> AllRole()
+        public IActionResult AllRole()
         {
-            return View(await repository.GetAllAsync());
+            return View( repository.GetAll());
         }
 
         public IActionResult Add()
