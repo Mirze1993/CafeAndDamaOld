@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BLCafe\MicroORM.csproj" />
+    <ProjectReference Include="..\Cafe\Cafe.csproj" />
     <ProjectReference Include="..\Model\Model.csproj" />
   </ItemGroup>
 

@@ -19,7 +19,7 @@ namespace MicroORM
 
 
         public abstract DbParameter SetParametr(string paramName, object value);
-        
+
 
         protected void ConnectionOpen()
         {
@@ -106,16 +106,16 @@ namespace MicroORM
 
 
         //Scaller
-        public object Scaller(string commandText,  List<DbParameter> parameters = null)
+        public object Scaller(string commandText, List<DbParameter> parameters = null)
         {
-            CommandStart( commandText, parameters);
+            CommandStart(commandText, parameters);
             ConnectionOpen();
             object b = null;
             try
             {
                 b = command.ExecuteScalar();
             }
-            catch (Exception) { }
+            catch (Exception e) { }
             return b;
         }
 
@@ -135,7 +135,7 @@ namespace MicroORM
 
 
         //reader
-        public T Reader<T>(Func<DbDataReader, T> readMetod, string commandText,  List<DbParameter> parameters = null)
+        public T Reader<T>(Func<DbDataReader, T> readMetod, string commandText, List<DbParameter> parameters = null)
         {
             CommandStart(commandText, parameters);
             ConnectionOpen();
@@ -143,12 +143,12 @@ namespace MicroORM
             {
                 reader = command.ExecuteReader();
             }
-            catch (Exception) { return default(T); }
+            catch (Exception e) { return default(T); }
             var r = readMetod(reader);
             return r;
         }
 
-        public T Reader<T>(Func<DbDataReader, T> readMetod, string commandText, CommandType type,  List<DbParameter> parameters = null)
+        public T Reader<T>(Func<DbDataReader, T> readMetod, string commandText, CommandType type, List<DbParameter> parameters = null)
         {
             CommandStart(type, commandText, parameters);
             ConnectionOpen();
@@ -162,12 +162,12 @@ namespace MicroORM
         }
 
 
-        public List<T> Reader<T>(string commandText,  List<DbParameter> parameters = null) where T : class, new()
+        public List<T> Reader<T>(string commandText, List<DbParameter> parameters = null) where T : class, new()
         {
             return Reader(GetList<T>, commandText, parameters);
         }
 
-        public List<T> Reader<T>(string commandText, CommandType type,List<DbParameter> parameters = null) where T : class, new()
+        public List<T> Reader<T>(string commandText, CommandType type, List<DbParameter> parameters = null) where T : class, new()
         {
             return Reader(GetList<T>, commandText, type, parameters);
         }
@@ -196,7 +196,8 @@ namespace MicroORM
 
         public void Dispose()
         {
-            if (!reader.IsClosed) reader.Close();
+            if (reader != null)
+                if (!reader.IsClosed) reader.Close();
             if (command != null) command.Dispose();
             if (transaction != null) transaction.Dispose();
             if (connection == null) return;

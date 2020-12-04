@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BLCafe.ConcreateRepository;
+using Cafe.Repostory;
 using Microsoft.AspNetCore.Mvc;
 using Model.Entities;
 
@@ -24,7 +24,7 @@ namespace Cafe.Controllers.Admin
 
         public IActionResult Update(int id)
         {
-            return View("AddOrUpdate", repository.GetById(id).FirstOrDefault());
+            return View("AddOrUpdate", repository.GetByColumName("Id",id).FirstOrDefault());
         }
 
         [HttpPost]
@@ -32,7 +32,7 @@ namespace Cafe.Controllers.Admin
         {
             if (model.Id > 0)
             {
-                var m = repository.GetById(model.Id).FirstOrDefault();
+                var m = repository.GetByColumName("Id", model.Id).FirstOrDefault();
                 if (m == null) return RedirectToAction("AllRole");
                 repository.Update(model, model.Id);
             }

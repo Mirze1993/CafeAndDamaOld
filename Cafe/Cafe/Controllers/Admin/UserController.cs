@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using BLCafe.ConcreateRepository;
+using Cafe.Repostory;
 using Microsoft.AspNetCore.Mvc;
 using Model.Entities;
-using Model.UIEntites;
 using Newtonsoft.Json;
 
 namespace Cafe.Controllers.Admin
@@ -42,10 +40,10 @@ namespace Cafe.Controllers.Admin
             return result;
         }
 
-        public async IActionResult UpdateUser(int id)
+        public  IActionResult UpdateUser(int id)
         {
-            var u = ( repository.GetById(id)).FirstOrDefault();
-            ViewBag.UserRole = repository.getUserRoles(id);
+            var u =  repository.GetByColumName("Id",id).FirstOrDefault();
+            ViewBag.UserRole = repository.GetUserRoles(id);
             ViewBag.Roles =  new RoleRepository().GetAll();
             return View(u);
         }

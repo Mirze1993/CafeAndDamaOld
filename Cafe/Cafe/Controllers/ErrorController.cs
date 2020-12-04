@@ -13,6 +13,10 @@ namespace Cafe.Controllers
         [Route("/Error/{statusCode}")]
         public IActionResult HttpStatusCodeHandler(int statusCode)
         {
+            var exceptionDetals = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+            
+           
+            ViewBag.code = statusCode;
             return View();
         }
 
@@ -21,6 +25,7 @@ namespace Cafe.Controllers
         {
             var exceptionDetals = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
            
+            
             return View("HttpStatusCodeHandler");
         }
     }

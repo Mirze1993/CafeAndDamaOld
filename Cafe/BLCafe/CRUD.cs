@@ -29,7 +29,6 @@ namespace MicroORM
                 if (id != null) return Convert.ToInt32(id);
                 else return 0;
             }
-
         }
 
         public virtual bool Delet(int id)
@@ -39,11 +38,11 @@ namespace MicroORM
                 return commander.NonQuery(cmtext);
         }
 
-        public virtual List<T> GetById(int id)
+        public virtual List<T> GetByColumName(string columName,object value)
         {
-            string cmtext = query.GetById();
+            string cmtext = query.GetByColumName(columName);
             using (CommanderBase commander = DBContext.CreateCommander())
-                return commander.Reader<T>(cmtext, new List<DbParameter>() { commander.SetParametr("@Id", id) });
+                return commander.Reader<T>(cmtext, new List<DbParameter>() { commander.SetParametr(columName, value)});
 
         }
 
@@ -77,7 +76,7 @@ namespace MicroORM
             string cmtext = query.RowCountWithSrc(srcClm);
             using (CommanderBase commander = DBContext.CreateCommander())
             {                
-                var o = commander.Scaller(cmtext, new List<DbParameter>(){ commander.SetParametr("@srcClm", srcValue) });
+                var o = commander.Scaller(cmtext, new List<DbParameter>(){ commander.SetParametr(srcClm, srcValue) });
 
                 if (o != null) return Convert.ToInt32(o);
                 else return 0;
@@ -95,7 +94,7 @@ namespace MicroORM
         {
             string cmtext = query.getFromToWithSrc(from, to, srcClm);
             using (CommanderBase commander = DBContext.CreateCommander())
-                return commander.Reader<T>(cmtext, new List<DbParameter> { commander.SetParametr("@srcClm", srcValue) });
+                return commander.Reader<T>(cmtext, new List<DbParameter> { commander.SetParametr(srcClm, srcValue) });
         }
 
     }

@@ -12,6 +12,7 @@ namespace Cafe.Tools.Config
     {
         public override Task ValidatePrincipal(CookieValidatePrincipalContext context)
         {
+            
             OnlineUsers.AddUser(context.Principal.Identity.Name);
             return base.ValidatePrincipal(context);
         }

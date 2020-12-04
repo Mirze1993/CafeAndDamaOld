@@ -10,10 +10,7 @@ namespace MicroORM
 {
     public class SqlCommander : CommanderBase
     {
-        //static readonly string CConnectionString = "Server=.\\SQLExpress;Database=Cafe;Trusted_Connection=True";
-
-            
-
+       
         public override List<DbParameter> SetParametrs<T>(T t)
         {
             List<DbParameter> parametrs = new List<DbParameter>();
@@ -30,7 +27,7 @@ namespace MicroORM
 
         public override DbParameter SetParametr(string paramName, object value)
         {
-            return new SqlParameter(paramName, value);
+            return new SqlParameter($"@{paramName}", value);
         }
 
 

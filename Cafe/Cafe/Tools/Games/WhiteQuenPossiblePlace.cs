@@ -146,6 +146,7 @@ namespace Cafe.Tools.Games
                 if (Check(playGame.BlackCoordinate, (byte)(x + 1), (byte)(y + 1)) == Possison.yes)
                     if (Check(allCoordinates, (byte)(x + 2), (byte)(y + 2)) == Possison.no)
                         return new Coordinate((byte)(x + 1), (byte)(y + 1));
+                    else break;
                 x++; y++;
             }
             return null;
@@ -159,6 +160,7 @@ namespace Cafe.Tools.Games
                 if (Check(playGame.BlackCoordinate, (byte)(x - 1), (byte)(y + 1)) == Possison.yes)
                     if (Check(allCoordinates, (byte)(x - 2), (byte)(y + 2)) == Possison.no)
                         return new Coordinate((byte)(x - 1), (byte)(y + 1));
+                    else break;
                 x--; y++;
             }
             return null;
@@ -172,6 +174,7 @@ namespace Cafe.Tools.Games
                 if (Check(playGame.BlackCoordinate, (byte)(x + 1), (byte)(y - 1)) == Possison.yes)
                     if (Check(allCoordinates, (byte)(x + 2), (byte)(y - 2)) == Possison.no)
                         return new Coordinate((byte)(x + 1), (byte)(y - 1));
+                    else break;
                 x++; y--;
             }
             return null;
@@ -185,6 +188,7 @@ namespace Cafe.Tools.Games
                 if (Check(playGame.BlackCoordinate, (byte)(x - 1), (byte)(y - 1)) == Possison.yes)
                     if (Check(allCoordinates, (byte)(x - 2), (byte)(y - 2)) == Possison.no)
                         return new Coordinate((byte)(x - 1), (byte)(y - 1));
+                    else break;
                 x--; y--;
             }
             return null;

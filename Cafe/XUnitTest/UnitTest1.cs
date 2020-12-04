@@ -1,11 +1,10 @@
-using BLCafe.ConcreateRepository;
-using Model.Entities;
-using System;
+
+using Cafe.Repostory;
+using System.Linq;
 using Xunit;
-using System.Data.SqlClient;
-using BLCafe;
+
 using Xunit.Abstractions;
-using System.Threading.Tasks;
+
 
 namespace XUnitTest
 {
@@ -15,52 +14,44 @@ namespace XUnitTest
 
         public UnitTest1(ITestOutputHelper output)
         {
+            MicroORM.ORMConfig.ConnectionString = "Server =.\\SQLExpress; Database = Cafe; Trusted_Connection = True";
+            MicroORM.ORMConfig.DbType = MicroORM.DbType.MSSQL;
             this.output = output;
         }
 
-        CategoryRepository category = new CategoryRepository();
-        ProductRepository product = new ProductRepository();
+       
         [Fact]
         public  void Test1()
         {
-            
+            CategoryRepository r = new CategoryRepository();
+            output.WriteLine(r.RowCount().ToString());
         }
 
         [Fact]
-        public  void Test2()
+        public void Test2()
         {
-            var list = category.GetAll();
-            foreach (var item in list)
-            {
-                output.WriteLine(item.Name.ToString());
-            }
-           
+            CategoryRepository r = new CategoryRepository();
+            var t = r.GetAll();
         }
 
         [Fact]
         public void Test3()
         {
-            var list = product.GetById(30);
-
-            foreach (var item in list)
-            {
-                output.WriteLine(item.Name.ToString());
-            }
+            CategoryRepository r = new CategoryRepository();
+            var m = r.GetByColumName("Id", 1008).FirstOrDefault();
+           m.Name = "33";
+            var b=r.Update(m, m.Id);
+            output.WriteLine(b.ToString());
         }
-
         [Fact]
         public void Test4()
         {
-            var list = category.GetById(30);
-
-            foreach (var item in list)
-            {
-                output.WriteLine(item.Name.ToString());
-            }
+            CategoryRepository r = new CategoryRepository();
+            var m = r.GetByColumName("Id", 1008).FirstOrDefault();
+            m.Name = "44";
+            var b=r.Update(m, m.Id);
+            output.WriteLine(b.ToString());
         }
-
-
-       
 
     }
 }

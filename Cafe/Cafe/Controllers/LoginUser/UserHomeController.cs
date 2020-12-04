@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using BLCafe.ConcreateRepository;
-using BLCafe.Interface;
+using Cafe.Repostory;
 using Cafe.Tools;
 using Cafe.Tools.Config;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Model.Entities;
-using Model.UIEntites;
 using Model.UIGame;
 using Newtonsoft.Json;
 
@@ -20,13 +16,19 @@ namespace Cafe.Controllers.LoginUser
     [OnlineUserFilter]
     public class UserHomeController : Controller
     {
-        IGamesRepository repository;
-        public UserHomeController(IGamesRepository gamesRepository )
+        GamesRepository repository;
+        public UserHomeController( )
         {
-            repository = gamesRepository;
+            repository = new GamesRepository();
         }
 
         public IActionResult Index()
+        {
+           
+            return View();
+        }
+
+        public IActionResult GameRoom()
         {
             ViewBag.ActiveUser = OnlineUsers.Users;
             return View();
@@ -35,15 +37,16 @@ namespace Cafe.Controllers.LoginUser
         [HttpPost]
         public string RequestGame(string username)
         {
-            var userid=User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
-            var obj = repository.ExecuteScaler($"Select u.Id from AppUser u Where u.UserName='{username}'");
-            int acceptUserId = 0;
-            int requestUserId = 0;
-            if (obj != null) acceptUserId=Convert.ToInt32(obj);
-            if (userid != null) requestUserId = Convert.ToInt32(userid);
+            var userid=User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;            
+
+            int acceptUserId = repository.GetIdByColumName("UserName",username);
+            int requestUserId =userid != null? requestUserId = Convert.ToInt32(userid):0;
             if (acceptUserId <=0||requestUserId<=0) return "user not found";
-            var checkagain = repository.ExecuteReader<Games>($"select * from Games g where (g.RequestUser={requestUserId} and g.AcceptUser={acceptUserId} and g.Status <> 'Close') or (g.RequestUser={acceptUserId} and g.AcceptUser={requestUserId}) and g.Status <> 'Close'");
-            if (checkagain.Count > 0) return "game exsist";
+            
+
+            if (repository.CountActivGames(acceptUserId,requestUserId) > 0) return "game exsist";
+
+
             int gameId = repository.Insert(new Games() {
                 AcceptUser = acceptUserId,
                 RequestUser = requestUserId,
@@ -57,17 +60,11 @@ namespace Cafe.Controllers.LoginUser
         public string CheckGamesDB()
         {
             var userid = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
-            int id = 0;
-            if (userid != null) id = Convert.ToInt32(userid);
+
+            int id = userid != null? id = Convert.ToInt32(userid):0;
             if (id <= 0) return "error";
-            var games=repository.ExecuteReader<UIGames>
-                ($"select g.*, " +
-                $"u.UserName as AcceptUserName, " +
-                $"u1.UserName as RequestUserName " +
-                $"from Games g " +
-                $"LEFT JOIN AppUser u on u.Id = g.AcceptUser " +
-                $"LEFT JOIN AppUser u1 on u1.Id = g.RequestUser " +
-                $"where g.RequestUser = {id} or g.AcceptUser = {id}");
+
+            var games = repository.GetUserGames(id);
             return JsonConvert.SerializeObject(games);
         }
 
@@ -80,7 +77,7 @@ namespace Cafe.Controllers.LoginUser
         [HttpPost]
         public string AcceptRequest(int id,string reqU,string accU)
         {
-            var games= repository.GetById(id);
+            var games= repository.GetByColumName("Id",id);
             if (games.Count<1) return "game not found";
             var game = games.FirstOrDefault();
             game.Status = GameStatus.Start;

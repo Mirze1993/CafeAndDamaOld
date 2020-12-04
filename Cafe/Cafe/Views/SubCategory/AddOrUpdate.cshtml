@@ -1,4 +1,4 @@
-﻿@model SubCategory
+﻿@model UISubCategoryListCategory
 @{
     ViewData["Title"] = "AddOrUpdate";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -9,16 +9,21 @@
 
 <form method="post" asp-action="AddOrUpdate">
     <div class="form-group">
-        <label asp-for="Name">Alt katiqoriya adı:</label>
-        <input asp-for="Name" class="form-control" required>
+        <label asp-for="SubCategory.Name">Alt katiqoriya adı:</label>
+        <input asp-for="SubCategory.Name" class="form-control" required>
         <div class="invalid-feedback">Zəhmət olmasa doldurun</div>
 
-        <label asp-for="Description">Açıqlama:</label>
-        <input asp-for="Description" class="form-control" required>
+        <label asp-for="SubCategory.Description">Açıqlama:</label>
+        <input asp-for="SubCategory.Description" class="form-control" required>
         <div class="invalid-feedback">Zəhmət olmasa doldurun</div>
-    </div>
 
-    <input type="hidden" asp-for="Id" />
+        <label asp-for="Categores">Catagory:</label>
+        <select asp-for="SubCategory.CategoryId" asp-items="Model.Categores" class="form-control" ></select>
+            <div class="invalid-feedback">Zəhmət olmasa doldurun</div>
+</div>
+
+    <input type="hidden" asp-for="SubCategory.Id" />
+    
 
 
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Əlavə et</button>
@@ -47,81 +52,12 @@
 
 </form>
 
-@if (Model != null)
-{
-<div>
-    Üst katiqorya: @ViewBag.CategoryName
-    <a onclick="categoryLoad()" id="categoryLoader" class="btn btn-sm btn-success">
-        <i class="fa fa-edit"></i>
-    </a>
-    <div id="divSelectCategory" style="display:none">
-        <select id="CategorySelect" class="selectpicker show-menu-arrow"> </select>
-        <a onclick="SaveChange()" class="btn btn-sm btn-success">
-            <i class="fa fa-save"></i>
-        </a>
-        <a onclick="Cancel()" class="btn btn-sm btn-danger">
-            <i class="fa fa-times"></i>
-        </a>
-    </div>
-
-</div>
 
 @section Scripts{
     <script>
-       
-        function categoryLoad() {
-         $.ajax({
-                method: "POST",
-                url: "@Url.Action("CatigoryForDropDown","Category")",
-                type: "text",
-                success: function (msg) {
-                    var obj = jQuery.parseJSON(msg);
-                    $(obj).each(function (i, value) {
-                        console.log(value.Id);
-                        $("#CategorySelect").append($("<option>")
-                            .val(value.Id)
-                            .html(value.Name)
-                        );
-                    });
-                    $("#divSelectCategory").show();
-                    $("#categoryLoader").hide();
-                },
-             error: function (msg) {
-
-                }
-
-            });
-        }
-
-        function SaveChange() {
-            var id =@Model.Id;
-            var catId = $("#CategorySelect").val();
-            console.log(catId);
-         $.ajax({
-                method: "POST",
-                url: "@Url.Action("SaveCategory")",
-                type: "text",
-                data: {
-                    catId: catId,
-                    id: id
-                },
-                success: function (msg) {
-                    alert(msg);
-                },
-             error: function (msg) {
-
-                }
-
-            });
-        }
-
-        function Cancel() {
-            $("#divSelectCategory").hide();
-            $("#categoryLoader").show()
-        }
-
+     
     </script>
 }
-}
+
 
 

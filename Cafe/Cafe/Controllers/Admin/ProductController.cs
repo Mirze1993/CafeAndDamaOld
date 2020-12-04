@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using BLCafe.ConcreateRepository;
+using Cafe.Repostory;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Model.Entities;
@@ -20,6 +19,7 @@ namespace Cafe.Controllers.Admin
         }
 
         ProductRepository repository = new ProductRepository();
+
         public IActionResult AllProduct()
         {
             return View(repository.GetUIProducts());
@@ -27,21 +27,34 @@ namespace Cafe.Controllers.Admin
 
         public IActionResult AddProduct()
         {
+            var model = new UIProductSupCategory(); 
+            var c = new SubCategoryRepository().GetAll("Id", "Name");
+            if (c.Count > 0)
+                foreach (var item in c)
+                {
+                    model.Subcategores.Add(new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(item.Name, item.Id.ToString()));
+                }
 
-            return View();
+            return View(model);
+            
         }
 
         public IActionResult UpdateProduct(int id)
         {
-            var pr =  repository.GetUIProducts(id);
-            var p = pr.FirstOrDefault();
-            if (p == null) return RedirectToAction("AllProduct");
+            var pr =  repository.GetByColumName("Id",id);            
+            var model = new UIProductSupCategory();model.Product= pr.FirstOrDefault();
+            var c = new SubCategoryRepository().GetAll("Id", "Name");
+            if (c.Count > 0)
+                foreach (var item in c)
+                {
+                    model.Subcategores.Add(new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(item.Name, item.Id.ToString()));
+                }
 
-            return View(p);
+            return View(model);
         }
 
         [HttpPost]
-        public  IActionResult AddProduct(UIProduct model)
+        public  IActionResult AddProduct(UIProductSupCategory model)
         {
 
             string filename = null;
@@ -57,21 +70,15 @@ namespace Cafe.Controllers.Admin
                     model.Img.CopyTo(fs);
                 }
             }
-              repository.Insert(new Product()
-            {
-                Name = model.Name,
-                Description = model.Description,
-                Price = model.Price,
-                ImgPath = filename
-            });
+              repository.Insert(model.Product);
             return RedirectToAction("AllProduct");
         }
 
         [HttpPost]
-        public  IActionResult UpdateProduct(UIProduct model)
+        public  IActionResult UpdateProduct(UIProductSupCategory model)
         {
 
-            string filename = model.ImgPath;
+            string filename = model.Product.ImgPath;
 
             if (model.Img != null)
             {
@@ -84,29 +91,15 @@ namespace Cafe.Controllers.Admin
                 {
                     model.Img.CopyTo(fs);
                 }
-               
-                
             }
-            var prd = new Product()
-            {
-                Name = model.Name,
-                Description = model.Description,
-                Price = model.Price,
-                ImgPath = filename
-            };
-            if (model.Id > 0)
-            {
-                prd.Id = model.Id;
-                 repository.Update(prd, prd.Id);
-            }
-            else  repository.Insert(prd);
-
+            
+            repository.Update(model.Product, model.Product.Id);
             return RedirectToAction("AllProduct");
         }
 
         public bool SaveSubCategory(int catId, int id)
         {
-            var pr = ( repository.GetById(id)).FirstOrDefault();
+            var pr = repository.GetByColumName("Id",id).FirstOrDefault();
             pr.SubCategoryId = catId;
             return  repository.Update(pr, pr.Id);
         }

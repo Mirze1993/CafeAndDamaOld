@@ -6,7 +6,7 @@ namespace MicroORM.Interface
 {
     public interface ICRUD<T>  where T : class, IEntity, new()
     {
-        List<T>  GetById(int id);
+        List<T> GetByColumName(string columName, object value);
         int Insert(T t);
         bool Update(T t, int id);
         bool Delet(int id);

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using System.Linq;
-using System.Threading.Tasks;
-using BLCafe.ConcreateRepository;
+using Cafe.Repostory;
 using Microsoft.AspNetCore.Mvc;
 using Model.Entities;
 using Newtonsoft.Json;
@@ -12,8 +10,11 @@ namespace Cafe.Controllers.Admin
     [Microsoft.AspNetCore.Authorization.Authorize]
     public class CategoryController : Controller
     {
-        CategoryRepository repository = new CategoryRepository();
-        SubCategoryRepository subCategory = new SubCategoryRepository();
+        CategoryRepository repository;
+        public CategoryController()
+        {
+            repository = new CategoryRepository();
+        }
 
         public IActionResult AllCategory()
         {
@@ -29,17 +30,11 @@ namespace Cafe.Controllers.Admin
         [HttpGet]
         public IActionResult Update(int id)
         {
-            var list =  subCategory.GetUISubCategories();
-            //var UISubCats = new List<UISubCategory>();
-            //foreach (var item in list)
-            //{
-            //    var u=JsonConvert.DeserializeObject<UISubCategory>(JsonConvert.SerializeObject(item));
-            //    if (u.CategoryId == id) u.IsCheck = true;
-            //    UISubCats.Add(u);
-            //}
+            var list = new SubCategoryRepository().GetUISubCategories();
+            
             ViewBag.SubCategorys = list;
 
-            return View("AddOrUpdate", (repository.GetById(id)).FirstOrDefault());
+            return View("AddOrUpdate",repository.GetByColumName("Id",id).FirstOrDefault());
         }
 
         [HttpPost]
@@ -56,7 +51,8 @@ namespace Cafe.Controllers.Admin
         [HttpPost]
         public bool ChangeSubCategory(int id,int categoryId,bool value)
         {
-            var s = subCategory.GetById(id).FirstOrDefault();
+            var subCategory= new SubCategoryRepository();
+            var s = subCategory.GetByColumName("Id",id).FirstOrDefault();
             if (s == null) return false;
             if (value) s.CategoryId = categoryId;
             else s.CategoryId = 0;
@@ -70,12 +66,6 @@ namespace Cafe.Controllers.Admin
             return RedirectToAction("AllCategory");
         }
 
-        public  string CatigoryForDropDown()
-        {
-            var list =  repository.GetAll("Id","Name");
-            return JsonConvert.SerializeObject(list);
-
-
-        }
+       
     }
 }

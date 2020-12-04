@@ -33,9 +33,9 @@ namespace MicroORM.SqlQuery
         /// sqlParametr @Id
         /// </summary>
         /// <returns></returns>
-        public string GetById()
+        public string GetByColumName(string columName)
         {
-            return $"SELECT * FROM {GetTypeT.Name} WHERE Id =@Id ";
+            return $"SELECT * FROM {GetTypeT.Name} WHERE {columName} =@{columName}";
         }
 
         public string getFromTo(int from, int to)
@@ -102,7 +102,7 @@ namespace MicroORM.SqlQuery
         public string RowCountWithSrc(string srcClm)
         {
             return $"Select count (*) from {GetTypeT.Name} u " +
-                $"Where u.{srcClm} like '@{srcClm}%'";
+                $"Where u.{srcClm} like '@{srcClm}'+'%'";
 
         }
         /// <summary>

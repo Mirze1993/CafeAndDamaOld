@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using System.Linq;
-using System.Threading.Tasks;
-using BLCafe.ConcreateRepository;
+using Cafe.Repostory;
 using Microsoft.AspNetCore.Mvc;
 using Model.Entities;
+using Model.UIEntites;
 using Newtonsoft.Json;
 
 namespace Cafe.Controllers.Admin
@@ -13,58 +12,60 @@ namespace Cafe.Controllers.Admin
     {
         SubCategoryRepository repository = new SubCategoryRepository();
 
-        public  IActionResult AllSubCategory()
+        public IActionResult AllSubCategory()
         {
-            return View( repository.GetUISubCategories());
+            return View(repository.GetUISubCategories());
         }
 
         public IActionResult Add()
         {
-            return View("AddOrUpdate");
+            var model = new UISubCategoryListCategory();            
+            var c = new CategoryRepository().GetAll("Id", "Name");
+            if (c.Count > 0)
+                foreach (var item in c)
+                {
+                    model.Categores.Add(new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(item.Name, item.Id.ToString()));
+                }
+
+            return View("AddOrUpdate", model);
         }
 
         [HttpGet]
         public IActionResult Update(int id)
         {
-            var s = ( repository.GetUISubCategories(id)).FirstOrDefault();
-            ViewBag.CategoryName = s.CategoryName;
-            return View("AddOrUpdate", new SubCategory()
-            {
-                Id = s.Id,CategoryId=s.CategoryId,Description=s.Description,Name=s.Name
-            });
+            var model = new UISubCategoryListCategory();
+            model.SubCategory = repository.GetByColumName("Id", id).FirstOrDefault();
+            var c = new CategoryRepository().GetAll("Id", "Name");
+            if (c.Count > 0)
+                foreach (var item in c)
+                {
+                    model.Categores.Add(new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(item.Name, item.Id.ToString()));
+                }
+
+            return View("AddOrUpdate", model);
         }
 
         [HttpPost]
-        public IActionResult AddOrUpdate(SubCategory subCategory)
+        public IActionResult AddOrUpdate(UISubCategoryListCategory model)
         {
             bool b;
-            if (subCategory.Id > 0) b =  repository.Update(subCategory, subCategory.Id);
-            else b =  repository.Insert(subCategory)>0;
+            if (model.SubCategory.Id > 0) b = repository.Update(model.SubCategory, model.SubCategory.Id);
+            else b = repository.Insert(model.SubCategory) > 0;
             if (b)
                 return RedirectToAction("AllSubCategory");
             return View("AddOrUpdate");
         }
 
-        public bool SaveCategory(int catId, int id)
-        {
-            var sc = ( repository.GetById(id)).FirstOrDefault();
-            sc.CategoryId = catId;
-            return  repository.Update(sc, sc.Id);
-        }
+      
 
         [HttpPost]
-        public  IActionResult Delete(int Id)
+        public IActionResult Delete(int Id)
         {
-            var b =  repository.Delet(Id);
+            var b = repository.Delet(Id);
             return RedirectToAction("AllSubCategory");
         }
 
 
-        public string SubCatigoryForDropDown()
-        {
-            var s = repository.GetAll("Id", "Name");
-            return JsonConvert.SerializeObject(s);
-        }
-        
+
     }
 }

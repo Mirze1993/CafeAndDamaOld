@@ -5,38 +5,47 @@ namespace MicroORM
 {
     public static class DBContext
     {
+        static readonly object _object = new object();
+        static readonly object _object1 = new object();
         public static CommanderBase CreateCommander()
         {
-            CommanderBase commander = null; ;
-            switch (ORMConfig.DbType)
+            lock (_object)
             {
-                case DbType.MSSQL:
-                    commander=new SqlCommander();
-                    break;
-                case DbType.Oracle:
-                    commander = new OracleCommander();
-                    break;
-                default:
-                    break;
+                CommanderBase commander = null; ;
+                switch (ORMConfig.DbType)
+                {
+                    case DbType.MSSQL:
+                        commander = new SqlCommander();
+                        break;
+                    case DbType.Oracle:
+                        commander = new OracleCommander();
+                        break;
+                    default:
+                        break;
+                }
+                return commander;
             }
-            return commander;
+
         }
 
         public static IQuery<T> CreateQuary<T>()
         {
-            IQuery<T> query = null;
-            switch (ORMConfig.DbType)
+            lock (_object1)
             {
-                case DbType.MSSQL:
-                    query = new SqlQuery<T>();
-                    break;
-                case DbType.Oracle:
-                     query = new SqlQuery<T>();
-                    break;
-                default:
-                    break;
+                IQuery<T> query = null;
+                switch (ORMConfig.DbType)
+                {
+                    case DbType.MSSQL:
+                        query = new SqlQuery<T>();
+                        break;
+                    case DbType.Oracle:
+                        query = new SqlQuery<T>();
+                        break;
+                    default:
+                        break;
+                }
+                return query;
             }
-            return query;
         }
 
     }

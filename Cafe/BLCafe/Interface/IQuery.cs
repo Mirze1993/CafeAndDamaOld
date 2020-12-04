@@ -12,7 +12,7 @@ namespace MicroORM.Interface
         /// sqlParametr @Id
         /// </summary>
         /// <returns></returns>
-        string GetById();
+        string GetByColumName(string columName);
         string getFromTo(int from, int to);
         /// <summary>
         /// 

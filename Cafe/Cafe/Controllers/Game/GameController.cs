@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+
 using System.Linq;
-using System.Threading.Tasks;
-using BLCafe.Interface;
+
+using Cafe.Repostory;
 using Cafe.Tools.Games;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Model.Entities;
 using Model.UIGame;
@@ -11,12 +12,13 @@ using Newtonsoft.Json;
 
 namespace Cafe.Controllers.Game
 {
+    [Authorize]
     public class GameController : Controller
     {
-        IPlayGameRepository repository;
-        public GameController(IPlayGameRepository gameRepository)
+        PlayGameRepository repository;
+        public GameController( )
         {
-            repository = gameRepository;
+            repository = new PlayGameRepository();
         }
         public IActionResult Start(int id)
         {            
@@ -27,14 +29,14 @@ namespace Cafe.Controllers.Game
         [HttpPost]
         public string StartGame(int id)
         {
-            var pg = repository.Reader<PlayGame>($"Select * from PlayGame p where p.GameId={id}");
+            var pg = repository.GetByColumName("GameId",id);
             return JsonConvert.SerializeObject(pg.FirstOrDefault());
         }
 
         [HttpPost]
         public string PossiblePlace(int x, int y, int z, int gameId)
         {
-            var pg = repository.ExecuteReader<PlayGame>($"Select * from PlayGame p where p.GameId={gameId}").FirstOrDefault();
+            var pg = repository.GetByColumName("GameId", gameId).FirstOrDefault();
             UICoordinate uICoordinate = new UICoordinate();
             UIPlayGame uIPlaygame = new SrzJson().desrz(pg);
 
@@ -63,7 +65,7 @@ namespace Cafe.Controllers.Game
         [HttpPost]
         public string Move(int gameID, int oldX, int oldY, int oldZ, int newX, int newY)
         {
-            var pg = repository.Reader<PlayGame>($"Select * from PlayGame p where p.GameId={gameID}").FirstOrDefault();
+            var pg = repository.GetByColumName("GameId", gameID).FirstOrDefault();
             var uiGame = new SrzJson().desrz(pg);
             var moveItem = new MoveItem(
                 uiGame, 
@@ -94,7 +96,7 @@ namespace Cafe.Controllers.Game
         [HttpPost]
         public string DumMove(int gameID, int oldX, int oldY, int oldZ, int newX, int newY)
         {
-            var pg = repository.ExecuteReader<PlayGame>($"Select * from PlayGame p where p.GameId={gameID}").FirstOrDefault();
+            var pg = repository.GetByColumName("GameId", gameID).FirstOrDefault();
             var uiGame = new SrzJson().desrz(pg);
             var moveItem = new MoveItem(
                 uiGame, 
@@ -117,15 +119,15 @@ namespace Cafe.Controllers.Game
         [HttpPost]
         public string CkeckGame(int gameId)
         {
-            var pg = repository.ExecuteReader<PlayGame>($"Select * from PlayGame p where p.GameId={gameId}").FirstOrDefault();
+            var pg = repository.GetByColumName("GameId", gameId).FirstOrDefault();
             //any stone win
             if (!pg.BlackCoordinate.Contains("X")|| !pg.WhiteCoordinate.Contains("X")){
-                var g = repository.ExecuteReader <Games>($"Select * from Games p where p.Id ={ gameId}").FirstOrDefault();
+                var gamesRepostory = new GamesRepository();
+                var g = gamesRepostory.GetByColumName("Id", gameId).FirstOrDefault();
                 g.Status = GameStatus.Close;
                 if(!pg.WhiteCoordinate.Contains("X"))g.WinUser = g.AcceptUser;
                 if(!pg.BlackCoordinate.Contains("X"))g.WinUser = g.RequestUser;
-                var b=repository.ExecuteQuery ("update Games set Status=@Status" +
-                    $"WinUser=@WinUser where Id={g.Id}", g);
+                var b= gamesRepostory.Update(g,g.Id);
                 return "Win User " + g.WinUser;
             }
             return JsonConvert.SerializeObject(pg);
